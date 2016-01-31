@@ -24,16 +24,25 @@ import net.dv8tion.jda.entities.TextChannel;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Timer;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 
 public class AudioTest
@@ -84,6 +93,20 @@ public class AudioTest
 	        	channel.sendMessage("Бот не присоединен ни к одному каналу!\nПрисоединитесь к каналу используя команду !connect %channel%");
 		}
 		
+		//public void AvailablePlaylist(TextChannel channel)
+		//{
+		//	sBuilder.setLength(0);
+		//	int i = 1;
+		//	for(String playlist : GetJSONArray("config.json", "playlist"))
+		//	{
+		//       	sBuilder.append(i + ": " + playlist + "\r\n");
+		//       	i++;
+		//	}
+		//	
+		//	channel.sendMessage("Плейлисты:\r\n" + sBuilder.toString());
+	    //    channel.sendMessage("Пока не создано ни одного плейлиста");
+		//}
+		
 		public void GetMusicList(TextChannel channel)
 		{
 			sBuilder.setLength(0);
@@ -114,6 +137,9 @@ public class AudioTest
 		public void Play(String[] strarr, TextChannel channel)
 		{
 			if (jda.getAudioManager().isConnected())
+			{
+				if (strarr[1].contains("!y"))
+					strarr[1] = GetYoutubeMusic(strarr[1].substring(2, strarr[1].length()));
 				if (player == null && (strarr.length == 3 || strarr.length == 2))
 	            {
 	                if(AddMusicToQuery(strarr, channel))
@@ -124,6 +150,7 @@ public class AudioTest
 	            		StartPlaying(channel);
 		        } else 
 		        	channel.sendMessage("Предоставлены неправильные аргументы!");
+			}
 			else
 	        	channel.sendMessage("Бот не присоединен ни к одному каналу!\nПрисоединитесь к каналу используя команду !connect %channel%");
 		}
@@ -134,7 +161,11 @@ public class AudioTest
 				if (player == null || !player.isPlaying())
 					channel.sendMessage("Бот ничего не играет!");
 				else
+				{
 					player.stop();
+					musicQuery.clear();
+					player = null;
+				}
 			else
 	        	channel.sendMessage("Бот не присоединен ни к одному каналу!\nПрисоединитесь к каналу используя команду !connect %channel%");
 		}
@@ -172,7 +203,6 @@ public class AudioTest
 		        	channel.sendMessage("Не найдена песня под названием " + args[1]);
 		        	return false;
 				}
-			
 	        
 	        if (path != null)
 	        {
@@ -227,5 +257,67 @@ public class AudioTest
 	    		this.audioFile = audioFile;
 	    		this.channel = channel;
 	    	}
+	    }
+	    
+	    // Youtube
+	    public String GetYoutubeMusic(String id)
+	    {
+	    	try {
+	    		System.out.println("http://www.youtubeinmp3.com/fetch/?format=JSON&video=http://www.youtube.com/watch?v="+id);
+				String JSON = readUrl("http://www.youtubeinmp3.com/fetch/?format=JSON&video=http://www.youtube.com/watch?v="+id);
+				System.out.println(GetJSONElement(JSON, "link"));
+				return GetJSONElement(JSON, "link");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+	    	return null;
+	    }
+	    
+	    private String readUrl(String urlString) throws Exception {
+	        BufferedReader reader = null;
+	        try {
+	            URL url = new URL(urlString);
+	            reader = new BufferedReader(new InputStreamReader(url.openStream()));
+	            StringBuffer buffer = new StringBuffer();
+	            int read;
+	            char[] chars = new char[1024];
+	            while ((read = reader.read(chars)) != -1)
+	                buffer.append(chars, 0, read); 
+
+	            return buffer.toString();
+	        } finally {
+	            if (reader != null)
+	                reader.close();
+	        }
+	    }
+	    
+	    //TODO: Перенести в Utils
+	    public String GetJSONElement(String rawJSON, String element)
+	    {
+	    	JSONObject jsonObj = GetJSONObject(rawJSON);
+			return jsonObj.get(element).toString();
+	    }
+
+	    public JSONObject GetJSONObject(String rawJSON)
+	    {
+			try {
+				JSONParser parser = new JSONParser();
+				return (JSONObject)parser.parse(rawJSON);
+			} catch (ParseException e) {
+				System.out.println("JSON не спарсился");
+			}
+			return null;
+	    }
+	    
+	    public String ReadFile(String path)
+	    {
+	    	byte[] encoded;
+			try {
+				encoded = Files.readAllBytes(Paths.get(path));
+	    		return new String(encoded, Charset.defaultCharset());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
 	    }
 }

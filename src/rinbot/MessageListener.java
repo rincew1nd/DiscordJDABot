@@ -56,47 +56,27 @@ public class MessageListener extends ListenerAdapter
     	String message = event.getMessage().getContent();
     	String[] messageArr = message.split("\\s+");
     	
-        if(event.getMessage().getContent().equalsIgnoreCase(".cat"))
-        {
-        	event.getTextChannel().sendFile(new File(System.getProperty("user.dir") + "\\media\\images\\cat" + rnd.nextInt(7) + ".jpg"));
-        	event.getMessage().deleteMessage();
-        }
-        else if (messageArr[0].equalsIgnoreCase(".random"))
-        {
-        	if(messageArr.length == 2 && tryParseInt(messageArr[1]))
-        		event.getTextChannel().sendMessage("—лучайное число - " + rnd.nextInt(Integer.parseInt(messageArr[1])));
-        	else
-        		event.getTextChannel().sendMessage("Ќеправильные аргументы команды.\r\n.random %целое_число%");
-        	event.getMessage().deleteMessage();
-        }
-        	
-        else if (event.getMessage().getContent().equalsIgnoreCase(".clear") && event.getAuthor().getUsername().equalsIgnoreCase("“ест0"))
-        {
-        	if (!event.isPrivate())
-	            if (!event.getTextChannel().checkPermission(event.getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE))
-	                event.getTextChannel().sendMessage("Don't have permissions :,(");
-	            else
-	            {
-	                MessageHistory history = new MessageHistory(event.getJDA(), event.getTextChannel());
-	                List<Message> messages = history.retrieveAll();
-	                messages.forEach(Message::deleteMessage);
-	            }
-        	event.getMessage().deleteMessage();
-        } else if (messageArr[0].equalsIgnoreCase(".connect"))
+        if (messageArr[0].equalsIgnoreCase(".con"))
         {
         	if (messageArr.length == 2)
         	{
 	        	VoiceChannel ch = jda.getVoiceChannelByName(messageArr[1]).get(0);
 	        	System.out.println(ch.getName());
-	        	event.getJDA().getAudioManager().openAudioConnection(ch);
-        		event.getTextChannel().sendMessage("”спешно вошел в %channel%");
+	        	if (!ch.checkPermission(jda.getUsersByName("RinBot").get(0), Permission.VOICE_CONNECT))
+	        		event.getTextChannel().sendMessage("Ќе хватает прав дл€ входа в канал " + ch.getName());
+	        	else
+	        	{
+	        		event.getJDA().getAudioManager().closeAudioConnection();
+	        		event.getJDA().getAudioManager().openAudioConnection(ch);
+        			event.getTextChannel().sendMessage("”спешно вошел в " + ch.getName());
+	        	}
         	} else
-        		event.getTextChannel().sendMessage("Ќеправильные атрибуты команды.\r\n.connect %channel%");
+        		event.getTextChannel().sendMessage("Ќеправильные атрибуты команды.\r\n.con %channel%");
         	event.getMessage().deleteMessage();
-        } else if (message.equalsIgnoreCase(".disconnect"))
+        } else if (message.equalsIgnoreCase(".dcon"))
 		{
         	event.getJDA().getAudioManager().closeAudioConnection();
-    		event.getTextChannel().sendMessage("”спешно вышел в %channel%");
+    		event.getTextChannel().sendMessage("”спешно вышел из канала");
         	event.getMessage().deleteMessage();
 		} else if (message.split(";")[0].equalsIgnoreCase(".play"))
         {
@@ -108,15 +88,29 @@ public class MessageListener extends ListenerAdapter
         {
         	aute.Skip(event.getTextChannel());
         	event.getMessage().deleteMessage();
-        } else if (message.equalsIgnoreCase(".playlist"))
+        } else if (event.getMessage().getContent().split(";")[0].equalsIgnoreCase(".pl"))
         {
-        	aute.Playlist(event.getTextChannel());
+        	messageArr = event.getMessage().getContent().split(";");
+        	if (messageArr[1].equalsIgnoreCase("current"))
+        		aute.Playlist(event.getTextChannel());
+        	//else if (messageArr[1].equalsIgnoreCase("available"))
+        	//	aute.AvailablePlaylist(event.getTextChannel());
+        	//else if (messageArr[1].equalsIgnoreCase("load") && messageArr.length == 3)
+        	//	aute.LoadPlayList(messageArr, event.getTextChannel());
+        	//else if (messageArr[1].equalsIgnoreCase("save") && messageArr.length == 3)
+        	//	aute.SavePlayList(messageArr, event.getTextChannel());
+        	//else if (messageArr[1].equalsIgnoreCase("look") && messageArr.length == 3)
+        	//	aute.LookPlayList(messageArr, event.getTextChannel());
+        	//else if (messageArr[1].equalsIgnoreCase("add") && messageArr.length == 4)
+        	//	aute.LookPlayList(messageArr, event.getTextChannel());
+        	//else if (messageArr[1].equalsIgnoreCase("delete") && messageArr.length == 5)
+        	//	aute.LookPlayList(messageArr, event.getTextChannel());
         	event.getMessage().deleteMessage();
         } else if (message.equalsIgnoreCase(".stop"))
         {
         	aute.Stop(event.getTextChannel());
         	event.getMessage().deleteMessage();
-        } else if (message.equalsIgnoreCase(".musicList"))
+        } else if (message.equalsIgnoreCase(".ml"))
         {
         	aute.GetMusicList(event.getTextChannel());
         	event.getMessage().deleteMessage();
@@ -127,17 +121,48 @@ public class MessageListener extends ListenerAdapter
         	sBuilder.append("—писок команд:\r\n");
         	sBuilder.append("\t.help - запрос помощи\r\n");
         	sBuilder.append("\t.cat - постит рандомного кота в конфу\r\n");
-        	sBuilder.append("\t.random %целое_число% - получить рандомное целое число от 0 до %целое_число%\r\n");
+        	sBuilder.append("\t.rnd %целое_число% - получить рандомное целое число от 0 до %целое_число%\r\n");
         	sBuilder.append("¬ойс:\r\n");
-        	sBuilder.append("\t.connect %channel% - присоединитьс€ к каналу\r\n");
-        	sBuilder.append("\t.disconnect - выходит из войс чата\r\n");
-        	sBuilder.append("\t.musicList - список загруженной музыки\r\n");
+        	sBuilder.append("\t.con %channel% - присоединитьс€ к каналу\r\n");
+        	sBuilder.append("\t.dcon - выходит из войс чата\r\n");
+        	sBuilder.append("\t.ml - список загруженной музыки\r\n");
+        	sBuilder.append("\t.pl;current - плейлист\r\n");
         	sBuilder.append("\t.play;%URL%;%название% - скачивает песню и добавл€ет еЄ в плейлист\r\n");
+        	sBuilder.append("\t.play;!y%youtube-id%;%название% - скачивает песню c youtube и добавл€ет еЄ в плейлист\r\n");
         	sBuilder.append("\t.play;%название% - добавл€ет скаченную песню в плейлист\r\n");
         	sBuilder.append("\t.stop - останавливает музыку\r\n");
         	sBuilder.append("\t.skip - пропускает песню\r\n");
         	
         	event.getAuthor().getPrivateChannel().sendMessage(sBuilder.toString());
+        	event.getMessage().deleteMessage();
+        } else if(event.getMessage().getContent().equalsIgnoreCase(".cat"))
+        {
+        	event.getTextChannel().sendFile(new File(System.getProperty("user.dir") + "\\media\\images\\cat" + rnd.nextInt(7) + ".jpg"));
+        	event.getMessage().deleteMessage();
+        }
+        else if (messageArr[0].equalsIgnoreCase(".rnd"))
+        {
+        	if(messageArr.length == 2 && tryParseInt(messageArr[1]))
+        		event.getTextChannel().sendMessage("—лучайное число - " + rnd.nextInt(Integer.parseInt(messageArr[1])));
+        	else
+        		event.getTextChannel().sendMessage("Ќеправильные аргументы команды.\r\n.random %целое_число%");
+        	event.getMessage().deleteMessage();
+        }
+        	
+        else if (event.getMessage().getContent().equalsIgnoreCase(".clear"))
+        {
+        	if (!event.isPrivate())
+	            if (!event.getTextChannel().checkPermission(event.getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE))
+	                event.getTextChannel().sendMessage("Don't have permissions :,(");
+	            else
+	            {
+	                MessageHistory history = new MessageHistory(event.getJDA(), event.getTextChannel());
+	                List<Message> messages = history.retrieveAll();
+	                for(Message _message: messages)
+	                	if (_message.getAuthor().getUsername().equalsIgnoreCase("RinBot") ||
+	                		_message.getAuthor().getUsername().equalsIgnoreCase("Butter Bot"))
+	                		_message.deleteMessage();
+	            }
         	event.getMessage().deleteMessage();
         }
     }

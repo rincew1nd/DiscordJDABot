@@ -37,7 +37,7 @@ public class MessageListener extends ListenerAdapter
 	public static void main(String[] args)
     {
 		try {
-			jda = new JDABuilder("email", "password").build();
+			jda = new JDABuilder(args[0], args[1]).build();
 	        jda.addEventListener(new MessageListener());
 	        aute = new AudioTest(jda);
 	        sBuilder = new StringBuilder();
@@ -156,12 +156,8 @@ public class MessageListener extends ListenerAdapter
 	                event.getTextChannel().sendMessage("Don't have permissions :,(");
 	            else
 	            {
-	                MessageHistory history = new MessageHistory(event.getJDA(), event.getTextChannel());
-	                List<Message> messages = history.retrieveAll();
-	                for(Message _message: messages)
-	                	if (_message.getAuthor().getUsername().equalsIgnoreCase("RinBot") ||
-	                		_message.getAuthor().getUsername().equalsIgnoreCase("Butter Bot"))
-	                		_message.deleteMessage();
+	            	Runnable thread = new ClearThread(event);
+	            	new Thread(thread).start();
 	            }
         	event.getMessage().deleteMessage();
         }
@@ -180,6 +176,27 @@ public class MessageListener extends ListenerAdapter
 			String[] strarr = event.getMessage().getContent().split(";");
         	
             aute.Play(strarr, event.getTextChannel());
+		}
+    }
+    
+    public class ClearThread implements Runnable
+    {
+    	MessageReceivedEvent event;
+    	
+    	public ClearThread(MessageReceivedEvent event) {
+			this.event = event;
+		}
+    	
+		@Override
+		public void run() {
+			event.getTextChannel().sendMessage("Начинаю чистку...");
+			MessageHistory history = new MessageHistory(event.getJDA(), event.getTextChannel());
+			List<Message> messages = history.retrieveAll();
+			for(Message _message: messages)
+				if (_message.getAuthor().getUsername().equalsIgnoreCase("RinBot") ||
+					_message.getAuthor().getUsername().equalsIgnoreCase("Butter Bot"))
+					_message.deleteMessage();
+			event.getAuthor().getPrivateChannel().sendMessage("Чистка окончена!");
 		}
     }
     

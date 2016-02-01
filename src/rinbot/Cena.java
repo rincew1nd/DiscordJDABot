@@ -18,7 +18,8 @@ public class Cena {
 			boolean postMessage = !commandHandler.argumentHandler.Has("nm");
 			boolean playAudio = !commandHandler.argumentHandler.Has("na");
 			String voiceChannelToGet = commandHandler.argumentHandler.GetArgValue("ch:");
-    		File test = new File(MyUtils.GetRootFolder()+"\\media\\cena\\cena.mp3");
+    		File test = new File(MyUtils.GetRootFolder()+"\\media\\cena");
+    		File cenaSound = new File(MyUtils.GetRootFolder()+"\\media\\cena\\cena.mp3");
     		int totalFilesInFolder = test.list().length;
     		Random rand = new Random();
     		int cenaToUseID = rand.nextInt(totalFilesInFolder);
@@ -47,7 +48,7 @@ public class Cena {
 					.findAny().orElse(null);
 				}
 				
-				aute.PlayOneshot(test, playCenaTo);
+				aute.PlayOneshot(cenaSound, playCenaTo);
 			}
 		}
 	}

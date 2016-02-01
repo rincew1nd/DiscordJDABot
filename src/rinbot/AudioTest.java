@@ -132,6 +132,8 @@ public class AudioTest
 				player.pause();
 				Reconnect(channel);
 	            oneShot = true;
+			} else {
+				jda.getAudioManager().openAudioConnection(channel);
 			}
 			
 			File audioFile = null;

@@ -93,9 +93,12 @@ public class AudioTest
 		//  Функции для проигрывания музыки  //
 		///////////////////////////////////////
 		
+		
 		// Начать воспроизводить музыку
 	    public void StartPlaying()
 	    {
+	    	LoadPlaylist(currentPlaylist, channel);
+	    	
 	    	File audioFile = null;
 	    	try {
 	    		audioFile = musicQuery.getFirst();
@@ -114,9 +117,12 @@ public class AudioTest
 	    	}
 	    }
 
-		public void Play(TextChannel channel)
+		public void Play(String playlist, TextChannel channel)
 		{
 			this.channel = channel;
+			currentPlaylist = playlist;
+			
+			StartPlaying();
 		}
 	    
 		// Полностью остановить воспроизведение и очистить плейлист
@@ -263,7 +269,7 @@ public class AudioTest
 	    public void LoadPlaylist(String playlistName, TextChannel channel) {
     		JSONObject JSON = new JSONObject();
 			try {	
-				JSON = new JSONObject(ReadFile("assets\\playlists.json"));
+				JSON = new JSONObject(ReadFile(new File(".").getAbsolutePath()+"\\media\\music\\playlists.json"));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -273,7 +279,7 @@ public class AudioTest
 			musicQuery.clear();
 			for (Object music : playlists)
 				musicQuery.push(
-					new File(System.getProperty("user.pref")+"\\media\\music\\"+music.toString()+".mp3")
+					new File(new File(".").getAbsolutePath()+"\\media\\music\\"+music.toString()+".mp3")
 				);
 			
 			currentPlaylist = playlistName;
@@ -287,7 +293,7 @@ public class AudioTest
 	    {
 	    	if (playlistName != null)
 	    	{
-		    	JSONObject playlistsJSON = new JSONObject(ReadFile("assets\\playlists.json"));
+		    	JSONObject playlistsJSON = new JSONObject(ReadFile(new File(".").getAbsolutePath()+"\\media\\music\\playlists.json"));
 		    	
 				if (!playlistsJSON.has(playlistName)) {
 					JSONArray newPlaylist = new JSONArray();
@@ -309,18 +315,22 @@ public class AudioTest
 	    {
 	    	if (args.length == 1 || args.length == 2)
 	    	{
-		    	JSONObject playlistsJSON = new JSONObject(ReadFile("assets\\playlists.json"));
+		    	JSONObject playlistsJSON = new JSONObject(ReadFile("\\media\\music\\playlists.json"));
+		    	
 		    	File fileToCheck = null;
 		    	if (args.length == 1)
-		    		fileToCheck = new File(System.getProperty("user.pref")+"\\media\\music\\"+args[0]+".mp3");
+		    		fileToCheck = new File(new File(".").getAbsolutePath()+"\\media\\music\\"+args[0]+".mp3");
 		    	else
 		    		fileToCheck = new File(DownloadMusic(args[0], args[1], channel));
 		    		
-		    	//if (fileToCheck.exists()) {
-		    	//	playlistsJSON.put();
-				//}
+
+				JSONArray playlists = playlistsJSON.getJSONArray(currentPlaylist);
+		    	if (fileToCheck.exists()) {
+		    		playlists.put(fileToCheck.getName().split("\\.")[0]);
+				}
+		    	playlistsJSON.put(currentPlaylist, playlists);
 		    	
-		    	//WritePlaylistJSON(play);
+		    	WritePlaylistJSON(playlistsJSON);
 	    	} else {
 	    		channel.sendMessage("Переданны неверные аргументы");
 	    	}
@@ -352,7 +362,7 @@ public class AudioTest
 	    {
 		    JSONObject playlists = new JSONObject();
 			try {
-				playlists = new JSONObject(ReadFile(System.getProperty("user.pref")+"\\assets\\playlists.json"));
+				playlists = new JSONObject(ReadFile(new File(".").getAbsolutePath()+"\\media\\music\\playlists.json"));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -369,7 +379,7 @@ public class AudioTest
 	    public static void WritePlaylistJSON(JSONObject toWrite) {
 	    	FileWriter fileWriter;
 			try {
-				fileWriter = new FileWriter(System.getProperty("user.pref")+"\\assets\\playlists.json");
+				fileWriter = new FileWriter(new File(".").getAbsolutePath()+"\\assets\\playlists.json");
 				fileWriter.write(toWrite.toString());
 				fileWriter.close();
 			} catch (IOException e) {

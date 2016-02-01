@@ -99,7 +99,7 @@ public class MessageListener extends ListenerAdapter
         {
         	messageArr = event.getMessage().getContent().split(";");
         	if (messageArr[1].equalsIgnoreCase("current"))
-        		aute.Playlist(event.getTextChannel());
+        		aute.PrintPlaylist();
         	//else if (messageArr[1].equalsIgnoreCase("available"))
         	//	aute.AvailablePlaylist(event.getTextChannel());
         	//else if (messageArr[1].equalsIgnoreCase("load") && messageArr.length == 3)
@@ -122,7 +122,7 @@ public class MessageListener extends ListenerAdapter
         	if(messageArr.length == 2 && tryParseFloat(messageArr[1]))
         	{
         		event.getTextChannel().sendMessage("Громкость - " + Float.parseFloat(messageArr[1]));
-        		aute.player.setVolume(Float.parseFloat(messageArr[1]));
+        		//aute.player.setVolume(Float.parseFloat(messageArr[1]));
         	}
         	else
         		event.getTextChannel().sendMessage("Неправильные аргументы команды.\r\n.volume %целое_число%");
@@ -200,7 +200,7 @@ public class MessageListener extends ListenerAdapter
 		public void run() {
 			String[] strarr = event.getMessage().getContent().split(";");
         	
-            aute.Play(strarr, event.getTextChannel());
+            aute.Play(strarr[1], event.getTextChannel());
 		}
     }
     

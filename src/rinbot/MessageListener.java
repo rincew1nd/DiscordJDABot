@@ -38,7 +38,7 @@ public class MessageListener extends ListenerAdapter
 	public static void main(String[] args)
     {
 		try {
-			jda = new JDABuilder(args[0], args[1]).build();
+			jda = new JDABuilder(args[0],args[1]).buildAsync();
 	        jda.addEventListener(new MessageListener());
 	        aute = new AudioTest(jda);
 	        statistic = new UserStatistic(jda);
@@ -52,7 +52,11 @@ public class MessageListener extends ListenerAdapter
     
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
-    {
+    {	
+    	new Cena(event.getMessage().getContent().toString(), event);
+    	
+
+    	
     	if (event.getAuthor().getUsername().equalsIgnoreCase("RinBot")) return;
     	Random rnd = new Random();
     	String message = event.getMessage().getContent();
@@ -99,7 +103,7 @@ public class MessageListener extends ListenerAdapter
         {
         	messageArr = event.getMessage().getContent().split(";");
         	if (messageArr[1].equalsIgnoreCase("current"))
-        		aute.PrintPlaylist();
+        		//aute.Playlist(event.getTextChannel());
         	//else if (messageArr[1].equalsIgnoreCase("available"))
         	//	aute.AvailablePlaylist(event.getTextChannel());
         	//else if (messageArr[1].equalsIgnoreCase("load") && messageArr.length == 3)
@@ -122,7 +126,7 @@ public class MessageListener extends ListenerAdapter
         	if(messageArr.length == 2 && tryParseFloat(messageArr[1]))
         	{
         		event.getTextChannel().sendMessage("Громкость - " + Float.parseFloat(messageArr[1]));
-        		//aute.player.setVolume(Float.parseFloat(messageArr[1]));
+        		aute.player.setVolume(Float.parseFloat(messageArr[1]));
         	}
         	else
         		event.getTextChannel().sendMessage("Неправильные аргументы команды.\r\n.volume %целое_число%");
@@ -200,7 +204,7 @@ public class MessageListener extends ListenerAdapter
 		public void run() {
 			String[] strarr = event.getMessage().getContent().split(";");
         	
-            aute.Play(strarr[1], event.getTextChannel());
+            aute.Play(event.getTextChannel());
 		}
     }
     

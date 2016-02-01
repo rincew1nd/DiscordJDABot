@@ -84,12 +84,16 @@ public class AudioTest
 			ActionListener taskPerformer = new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
+					System.out.println(player + " | " + playerOneShot);
 					if(playerOneShot!= null && playerOneShot.isStopped() && oneShot)
 					{
 						oneShot = false;
 						Reconnect(lastChannel);
 			            jda.getAudioManager().setSendingHandler(player);
 			            player.play();
+					} else if(player == null && playerOneShot != null && playerOneShot.isStopped())
+					{
+						jda.getAudioManager().closeAudioConnection();
 					}
 					if(player != null)
 					{
@@ -139,7 +143,7 @@ public class AudioTest
 			File audioFile = null;
 	    	try {
 	    		audioFile = file;
-				Player playerOneShot = new FilePlayer(audioFile);
+				playerOneShot = new FilePlayer(audioFile);
 	            jda.getAudioManager().setSendingHandler(playerOneShot);
 	            playerOneShot.play();
 			} catch (IOException e) {
@@ -154,7 +158,7 @@ public class AudioTest
 		// Начать воспроизводить музыку
 	    public void StartPlaying()
 	    {
-	    	if (!musicQuery.isEmpty())
+	    	if (musicQuery.isEmpty())
 	    		LoadPlaylist(currentPlaylist, channel);
 	    	
 	    	File audioFile = null;

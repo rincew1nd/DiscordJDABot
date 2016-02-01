@@ -19,7 +19,7 @@ public class Cena {
 			boolean playAudio = !commandHandler.argumentHandler.Has("na");
 			String voiceChannelToGet = commandHandler.argumentHandler.GetArgValue("ch:");
     		File test = new File(MyUtils.GetRootFolder()+"\\media\\cena");
-    		File cenaSound = new File(MyUtils.GetRootFolder()+"\\media\\cena\\cena.mp3");
+    		File cenaSound = new File(MyUtils.GetRootFolder()+"\\media\\music\\cena.mp3");
     		int totalFilesInFolder = test.list().length;
     		Random rand = new Random();
     		int cenaToUseID = rand.nextInt(totalFilesInFolder);
@@ -42,7 +42,7 @@ public class Cena {
 				}
 				else
 				{
-					event.getGuild()
+					playCenaTo = event.getGuild()
 					.getVoiceChannels().stream()
 					.filter(x -> x.getName().equals(voiceChannelToGet))
 					.findAny().orElse(null);

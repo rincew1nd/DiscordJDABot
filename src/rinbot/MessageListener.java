@@ -32,6 +32,7 @@ public class MessageListener extends ListenerAdapter
 	public static JDA jda;
 	public static AudioTest aute;
 	public static StringBuilder sBuilder;
+	public static UserStatistic statistic;
 	
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args)
@@ -40,6 +41,7 @@ public class MessageListener extends ListenerAdapter
 			jda = new JDABuilder(args[0], args[1]).build();
 	        jda.addEventListener(new MessageListener());
 	        aute = new AudioTest(jda);
+	        statistic = new UserStatistic(jda);
 	        sBuilder = new StringBuilder();
 		} catch (LoginException e) {
 			e.printStackTrace();
@@ -67,6 +69,11 @@ public class MessageListener extends ListenerAdapter
 	        	else
 	        	{
 	        		event.getJDA().getAudioManager().closeAudioConnection();
+	        		try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 	        		event.getJDA().getAudioManager().openAudioConnection(ch);
         			event.getTextChannel().sendMessage("Успешно вошел в " + ch.getName());
 	        	}
@@ -147,9 +154,7 @@ public class MessageListener extends ListenerAdapter
         	else
         		event.getTextChannel().sendMessage("Неправильные аргументы команды.\r\n.random %целое_число%");
         	event.getMessage().deleteMessage();
-        }
-        	
-        else if (event.getMessage().getContent().equalsIgnoreCase(".clear"))
+        } else if (event.getMessage().getContent().equalsIgnoreCase(".clear"))
         {
         	if (!event.isPrivate())
 	            if (!event.getTextChannel().checkPermission(event.getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE))
@@ -159,6 +164,16 @@ public class MessageListener extends ListenerAdapter
 	            	Runnable thread = new ClearThread(event);
 	            	new Thread(thread).start();
 	            }
+        	event.getMessage().deleteMessage();
+        } else if (messageArr[0].equalsIgnoreCase(".stat") && messageArr[1].contains("@"))
+        {
+        	event.getTextChannel().sendMessage(
+        		new MessageBuilder()
+        			.appendString("Статистика по ")
+        			.appendMention(event.getMessage().getMentionedUsers().get(0))
+        			.appendString(statistic.GetStatistic(event.getMessage().getMentionedUsers().get(0)))
+        			.build()
+        	);
         	event.getMessage().deleteMessage();
         }
     }

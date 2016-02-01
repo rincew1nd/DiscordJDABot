@@ -62,12 +62,19 @@ public class AudioTest
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					if(player != null)
+					{
 						if(player.isStopped() && !musicQuery.isEmpty())
 						{
 				            musicQuery.removeFirst();
 				            if (!musicQuery.isEmpty())
 				            	StartPlaying(musicQuery.getFirst().channel);
+						} else if (player.isPlaying())
+						{
+							String audioName = musicQuery.getFirst().audioFile.getName();
+							jda.getAccountManager().setGame(audioName.substring(0, audioName.indexOf('.')));
 						}
+					} else
+						jda.getAccountManager().setGame("with Butter Bot");
 				}     
 			};
 			new Timer(1000, taskPerformer).start();

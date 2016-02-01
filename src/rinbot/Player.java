@@ -1,51 +1,46 @@
 package rinbot;
-import java.io.File;
-import java.util.Random;
 
 import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 public class Player {
 	public Player(String input, MessageReceivedEvent event) 
 	{
-		CommandHandler commandHandler = new CommandHandler(input, ".play ", " ");
+		AudioTest au = AudioTest.getInstance();
+		CommandHandler commandHandler = new CommandHandler(input, ".pl ", " ");
+		TextChannel channel = event.getTextChannel();
+		
 		if (commandHandler.StartsWith()) 
 		{
-			boolean postMessage = !commandHandler.argumentHandler.Has("nm");
-			boolean playAudio = !commandHandler.argumentHandler.Has("na");
-			String voiceChannelToGet = commandHandler.argumentHandler.GetArgValue("ch:");
-    		File test = new File(MyUtils.GetRootFolder()+"\\media\\cena");
-    		int totalFilesInFolder = test.list().length;
-    		Random rand = new Random();
-    		int cenaToUseID = rand.nextInt(totalFilesInFolder);
-			File[] cenaFolder = new File(MyUtils.GetRootFolder()+"\\media\\cena").listFiles();
-			File cenaToUse = cenaFolder[cenaToUseID];
+			au.SetChannel(event.getTextChannel());
 			
-			if (postMessage) {
-				TextChannel sendCenaTo = event.getTextChannel();
-				sendCenaTo.sendMessage("AND HIS NAME IS...");
-				sendCenaTo.sendFile(cenaToUse);
-				sendCenaTo.sendMessage("JOHN CEEENA! :trumpet: :trumpet: :trumpet:");
-			}
+			boolean isGet = !commandHandler.argumentHandler.Has("get");
+			boolean isGetAll = !commandHandler.argumentHandler.Has("getA");
+			boolean isCurrent = !commandHandler.argumentHandler.Has("curr");
+			boolean isPlay = !commandHandler.argumentHandler.Has("p");
+			boolean isAdd = !commandHandler.argumentHandler.Has("a");
+			boolean isDelete = !commandHandler.argumentHandler.Has("d");
+			String playlistName = commandHandler.argumentHandler.GetArgValue("nm:");
+			String songName = commandHandler.argumentHandler.GetArgValue("sg:");
 			
-			if (playAudio) 
-			{
-				VoiceChannel playCenaTo = null;
-				if (voiceChannelToGet.equals("")) 
-				{
-					playCenaTo = event.getGuild().getVoiceStatusOfUser(event.getAuthor()).getChannel();
-				}
-				else
-				{
-					event.getGuild()
-					.getVoiceChannels().stream()
-					.filter(x -> x.getName().equals(voiceChannelToGet))
-					.findAny().orElse(null);
-				}
-				
-				//insert playing audio trough player
-			}
+			String[] temp = new String[2];
+			temp[0] = (playlistName == "") ? "current" : playlistName;
+			temp[1] = songName;
+			
+			if (isGet)
+				au.PrintPlaylist();
+			else if (isGetAll)
+				au.PrintAllPlaylists();
+			else if (isCurrent)
+				au.PrintPlaylist();
+			else if (isPlay)
+				au.Play(playlistName, channel);
+			else if (isAdd)
+				au.AddToPlaylist(temp);
+			else if (isDelete)
+				au.DeleteFromPlaylist(temp);
+			
+			event.getMessage().deleteMessage();
 		}
 	}
 }

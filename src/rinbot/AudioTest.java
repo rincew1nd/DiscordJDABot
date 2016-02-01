@@ -74,7 +74,7 @@ public class AudioTest
 		
 		private AudioTest() {}
 		
-		public void AudioTestInit(JDA jda)
+		public AudioTest AudioTestInit(JDA jda)
 		{
 			this.jda = jda;
 			musicQuery = new LinkedList<File>();
@@ -84,7 +84,6 @@ public class AudioTest
 			ActionListener taskPerformer = new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					System.out.println(player + " | " + playerOneShot);
 					if(playerOneShot!= null && playerOneShot.isStopped() && oneShot)
 					{
 						oneShot = false;
@@ -112,6 +111,14 @@ public class AudioTest
 				}     
 			};
 			new Timer(1000, taskPerformer).start();
+			
+			return AudioTest.AudioTestHolder.HOLDER_INSTANCE;
+		}
+		
+		public AudioTest SetChannel(TextChannel channel)
+		{
+			this.channel = channel;
+			return AudioTest.AudioTestHolder.HOLDER_INSTANCE;
 		}
 		
 		
@@ -385,7 +392,7 @@ public class AudioTest
 	    //TODO: ÄÎÁÀÂÈÒÜ ÊÎÄ ÄËß ÄÎÁÀÂËÅÍÈß ÒÐÅÊÎÂ Â ÏËÅÉËÈÑÒÛ
 	    public void AddToPlaylist(String[] args)
 	    {
-	    	if (args.length == 1 || args.length == 2)
+	    	if (args.length >= 2)
 	    	{
 		    	JSONObject playlistsJSON = new JSONObject(ReadFile(MyUtils.GetRootFolder() + "\\media\\music\\playlists.json"));
 		    	
@@ -394,20 +401,52 @@ public class AudioTest
 		    		fileToCheck = new File(MyUtils.GetRootFolder()+"\\media\\music\\"+args[0]+".mp3");
 		    	else
 		    		fileToCheck = new File(DownloadMusic(args[0], args[1], channel));
-		    		
 
+		    	if (args[0] == "current") args[0] = currentPlaylist; 
 				JSONArray playlists = playlistsJSON.getJSONArray(currentPlaylist);
-		    	if (fileToCheck.exists()) {
-		    		playlists.put(fileToCheck.getName().split("\\.")[0]);
-				}
-		    	playlistsJSON.put(currentPlaylist, playlists);
-		    	
-		    	WritePlaylistJSON(playlistsJSON);
+
+				if(playlists != null)
+				{
+			    	if (fileToCheck.exists()) {
+			    		playlists.put(fileToCheck.getName().split("\\.")[0]);
+					}
+			    	playlistsJSON.put(currentPlaylist, playlists);
+			    	
+			    	WritePlaylistJSON(playlistsJSON);
+				} else 
+					channel.sendMessage("Ïëåéëèñò " + args[0] + " íå íàéäåí");
 	    	} else {
 	    		channel.sendMessage("Ïåðåäàííû íåâåðíûå àðãóìåíòû");
 	    	}
 	    }
 
+	    // Äîáàâèòü òðåê â òåêóùèé ïëåéëèñò
+	    //TODO: ÄÎÁÀÂÈÒÜ ÊÎÄ ÄËß ÄÎÁÀÂËÅÍÈß ÒÐÅÊÎÂ Â ÏËÅÉËÈÑÒÛ
+	    public void DeleteFromPlaylist(String[] args)
+	    {
+	    	if (args.length > 2)
+	    	{
+		    	JSONObject playlistsJSON = new JSONObject(ReadFile(MyUtils.GetRootFolder() + "\\media\\music\\playlists.json"));
+		    	
+		    	if (args[0] == "current") args[0] = currentPlaylist; 
+				JSONArray playlists = playlistsJSON.getJSONArray(args[0]);
+				
+				if(playlists != null)
+				{
+					for (int i=1; i<args.length; i++)
+				    	for (int j=0; j<playlists.length(); j++)
+				    		if(playlists.get(j) == args[i])
+				    			playlists.remove(j);
+			    	playlistsJSON.put(args[0], playlists);
+			    	
+			    	WritePlaylistJSON(playlistsJSON);
+				} else
+					channel.sendMessage("Ïëåéëèñò " + args[0] + " íå íàéäåí");
+	    	} else {
+	    		channel.sendMessage("Ïåðåäàííû íåâåðíûå àðãóìåíòû");
+	    	}
+	    }
+	    
 	    // Ïîêàçàòü âñå òðåêè â ïëåéëèñòå
 		public void PrintPlaylist()
 		{

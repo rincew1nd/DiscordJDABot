@@ -54,6 +54,7 @@ public class MessageListener extends ListenerAdapter
     public void onMessageReceived(MessageReceivedEvent event)
     {	
     	new Cena(event.getMessage().getContent().toString(), event);
+    	new Player(event.getMessage().getContent().toString(), event);
     	
 
     	
@@ -89,33 +90,9 @@ public class MessageListener extends ListenerAdapter
         	event.getJDA().getAudioManager().closeAudioConnection();
     		event.getTextChannel().sendMessage("Успешно вышел из канала");
         	event.getMessage().deleteMessage();
-		} else if (message.split(";")[0].equalsIgnoreCase(".play"))
-        {
-        	Runnable thread = new PlayThread(event);
-        	new Thread(thread).start();
-        	event.getMessage().deleteMessage();
-        	jda.getUsersByName("RinBot");
-        } else if (message.equalsIgnoreCase(".skip"))
+		} else if (message.equalsIgnoreCase(".skip"))
         {
         	aute.Skip(event.getTextChannel());
-        	event.getMessage().deleteMessage();
-        } else if (event.getMessage().getContent().split(";")[0].equalsIgnoreCase(".pl"))
-        {
-        	messageArr = event.getMessage().getContent().split(";");
-        	if (messageArr[1].equalsIgnoreCase("current"))
-        		aute.PrintPlaylist();
-        	//else if (messageArr[1].equalsIgnoreCase("available"))
-        	//	aute.AvailablePlaylist(event.getTextChannel());
-        	//else if (messageArr[1].equalsIgnoreCase("load") && messageArr.length == 3)
-        	//	aute.LoadPlayList(messageArr, event.getTextChannel());
-        	//else if (messageArr[1].equalsIgnoreCase("save") && messageArr.length == 3)
-        	//	aute.SavePlayList(messageArr, event.getTextChannel());
-        	//else if (messageArr[1].equalsIgnoreCase("look") && messageArr.length == 3)
-        	//	aute.LookPlayList(messageArr, event.getTextChannel());
-        	//else if (messageArr[1].equalsIgnoreCase("add") && messageArr.length == 4)
-        	//	aute.LookPlayList(messageArr, event.getTextChannel());
-        	//else if (messageArr[1].equalsIgnoreCase("delete") && messageArr.length == 5)
-        	//	aute.LookPlayList(messageArr, event.getTextChannel());
         	event.getMessage().deleteMessage();
         } else if (message.equalsIgnoreCase(".stop"))
         {

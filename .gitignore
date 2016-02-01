@@ -3,3 +3,4 @@ bin/
 .settings/
 config.json
 tokens.json
+.classpath

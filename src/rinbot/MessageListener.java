@@ -117,6 +117,16 @@ public class MessageListener extends ListenerAdapter
         {
         	aute.Stop(event.getTextChannel());
         	event.getMessage().deleteMessage();
+        } if (messageArr[0].equalsIgnoreCase(".volume"))
+        {
+        	if(messageArr.length == 2 && tryParseFloat(messageArr[1]))
+        	{
+        		event.getTextChannel().sendMessage("Громкость - " + Float.parseFloat(messageArr[1]));
+        		aute.player.setVolume(Float.parseFloat(messageArr[1]));
+        	}
+        	else
+        		event.getTextChannel().sendMessage("Неправильные аргументы команды.\r\n.volume %целое_число%");
+        	event.getMessage().deleteMessage();
         } else if (message.equalsIgnoreCase(".ml"))
         {
         	aute.GetMusicList(event.getTextChannel());
@@ -218,7 +228,16 @@ public class MessageListener extends ListenerAdapter
     boolean tryParseInt(String value) {  
         try {  
             Integer.parseInt(value);  
-            return true;  
+            return true;
+         } catch (NumberFormatException e) {  
+            return false;  
+         }  
+   }
+
+   boolean tryParseFloat(String value) {  
+        try {  
+            Float.parseFloat(value);  
+            return true;
          } catch (NumberFormatException e) {  
             return false;  
          }  

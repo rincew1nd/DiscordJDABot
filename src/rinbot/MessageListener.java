@@ -34,13 +34,13 @@ public class MessageListener extends ListenerAdapter
 	public static StringBuilder sBuilder;
 	public static UserStatistic statistic;
 	
-	@SuppressWarnings("deprecation")
 	public static void main(String[] args)
     {
 		try {
 			jda = new JDABuilder(args[0],args[1]).buildAsync();
 	        jda.addEventListener(new MessageListener());
-	        aute = new AudioTest(jda);
+	        aute = AudioTest.getInstance();
+	        aute.AudioTestInit(jda);
 	        statistic = new UserStatistic(jda);
 	        sBuilder = new StringBuilder();
 		} catch (LoginException e) {
@@ -103,7 +103,7 @@ public class MessageListener extends ListenerAdapter
         {
         	messageArr = event.getMessage().getContent().split(";");
         	if (messageArr[1].equalsIgnoreCase("current"))
-        		//aute.Playlist(event.getTextChannel());
+        		aute.PrintPlaylist();
         	//else if (messageArr[1].equalsIgnoreCase("available"))
         	//	aute.AvailablePlaylist(event.getTextChannel());
         	//else if (messageArr[1].equalsIgnoreCase("load") && messageArr.length == 3)
@@ -126,7 +126,7 @@ public class MessageListener extends ListenerAdapter
         	if(messageArr.length == 2 && tryParseFloat(messageArr[1]))
         	{
         		event.getTextChannel().sendMessage("Громкость - " + Float.parseFloat(messageArr[1]));
-        		aute.player.setVolume(Float.parseFloat(messageArr[1]));
+        		aute.GetPlayer().setVolume(Float.parseFloat(messageArr[1]));
         	}
         	else
         		event.getTextChannel().sendMessage("Неправильные аргументы команды.\r\n.volume %целое_число%");
@@ -204,7 +204,7 @@ public class MessageListener extends ListenerAdapter
 		public void run() {
 			String[] strarr = event.getMessage().getContent().split(";");
         	
-            aute.Play(event.getTextChannel());
+            aute.Play(strarr[1], event.getTextChannel());
 		}
     }
     

@@ -21,6 +21,7 @@ import net.dv8tion.jda.audio.player.FilePlayer;
 import net.dv8tion.jda.audio.player.Player;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.VoiceChannel;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Timer;
@@ -50,7 +51,6 @@ import java.util.LinkedList;
 
 public class AudioTest
 {
-	
 		//TODO: Add GETTER SETTER for private things
 		private JDA jda;
 		private TextChannel channel;
@@ -58,8 +58,23 @@ public class AudioTest
 		private String currentPlaylist;
 		private LinkedList<File> musicQuery;
 		private StringBuilder sBuilder;
-	
-		AudioTest(JDA jda)
+
+		//OneShot Player variables
+		private Player playerOneShot;
+		private boolean oneShot = false;
+		private VoiceChannel lastChannel = null;
+		
+		public static class AudioTestHolder {
+			public static final AudioTest HOLDER_INSTANCE = new AudioTest();
+		}
+			
+		public static AudioTest getInstance() {
+			return AudioTestHolder.HOLDER_INSTANCE;
+		}
+		
+		private AudioTest() {}
+		
+		public void AudioTestInit(JDA jda)
 		{
 			this.jda = jda;
 			musicQuery = new LinkedList<File>();
@@ -69,6 +84,13 @@ public class AudioTest
 			ActionListener taskPerformer = new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
+					if(playerOneShot!= null && playerOneShot.isStopped() && oneShot)
+					{
+						oneShot = false;
+						Reconnect(lastChannel);
+			            jda.getAudioManager().setSendingHandler(player);
+			            player.play();
+					}
 					if(player != null)
 					{
 						if(player.isStopped() && !musicQuery.isEmpty())
@@ -89,15 +111,49 @@ public class AudioTest
 		}
 		
 		
+		///////////////////////////////
+		//       GETTER SETTER       //
+		///////////////////////////////
+		
+		
+		public Player GetPlayer() { return player; };
+		public Player GetPlayerOneShot() { return playerOneShot; };
+		
+		
 		///////////////////////////////////////
 		//  Функции для проигрывания музыки  //
 		///////////////////////////////////////
 		
 		
+		public void PlayOneshot(File file, VoiceChannel channel)
+		{
+			if (player != null)
+			{
+				player.pause();
+				Reconnect(channel);
+	            oneShot = true;
+			}
+			
+			File audioFile = null;
+	    	try {
+	    		audioFile = file;
+				Player playerOneShot = new FilePlayer(audioFile);
+	            jda.getAudioManager().setSendingHandler(playerOneShot);
+	            playerOneShot.play();
+			} catch (IOException e) {
+	            e.printStackTrace();
+	        } catch (UnsupportedAudioFileException e) {
+	            e.printStackTrace();
+	        } catch (IllegalArgumentException e) {
+	            e.printStackTrace();
+	    	}
+		}
+		
 		// Начать воспроизводить музыку
 	    public void StartPlaying()
 	    {
-	    	LoadPlaylist(currentPlaylist, channel);
+	    	if (!musicQuery.isEmpty())
+	    		LoadPlaylist(currentPlaylist, channel);
 	    	
 	    	File audioFile = null;
 	    	try {
@@ -125,6 +181,19 @@ public class AudioTest
 			StartPlaying();
 		}
 	    
+		public void Reconnect(VoiceChannel channel)
+		{
+			lastChannel = jda.getAudioManager().getConnectedChannel();
+			
+			jda.getAudioManager().closeAudioConnection();
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			jda.getAudioManager().openAudioConnection(channel);
+		}
+		
 		// Полностью остановить воспроизведение и очистить плейлист
 		public void Stop(TextChannel channel)
 		{
@@ -269,7 +338,7 @@ public class AudioTest
 	    public void LoadPlaylist(String playlistName, TextChannel channel) {
     		JSONObject JSON = new JSONObject();
 			try {	
-				JSON = new JSONObject(ReadFile(new File(".").getAbsolutePath()+"\\media\\music\\playlists.json"));
+				JSON = new JSONObject(ReadFile(MyUtils.GetRootFolder()+"\\media\\music\\playlists.json"));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -279,13 +348,10 @@ public class AudioTest
 			musicQuery.clear();
 			for (Object music : playlists)
 				musicQuery.push(
-					new File(new File(".").getAbsolutePath()+"\\media\\music\\"+music.toString()+".mp3")
+					new File(MyUtils.GetRootFolder()+"\\media\\music\\"+music.toString()+".mp3")
 				);
 			
 			currentPlaylist = playlistName;
-			
-			if (player == null)
-				StartPlaying();
 		}
 
 	    // Создать плейлист в \media\music\playList.json
@@ -293,7 +359,7 @@ public class AudioTest
 	    {
 	    	if (playlistName != null)
 	    	{
-		    	JSONObject playlistsJSON = new JSONObject(ReadFile(new File(".").getAbsolutePath()+"\\media\\music\\playlists.json"));
+		    	JSONObject playlistsJSON = new JSONObject(ReadFile(MyUtils.GetRootFolder()+"\\media\\music\\playlists.json"));
 		    	
 				if (!playlistsJSON.has(playlistName)) {
 					JSONArray newPlaylist = new JSONArray();
@@ -315,11 +381,11 @@ public class AudioTest
 	    {
 	    	if (args.length == 1 || args.length == 2)
 	    	{
-		    	JSONObject playlistsJSON = new JSONObject(ReadFile("\\media\\music\\playlists.json"));
+		    	JSONObject playlistsJSON = new JSONObject(ReadFile(MyUtils.GetRootFolder() + "\\media\\music\\playlists.json"));
 		    	
 		    	File fileToCheck = null;
 		    	if (args.length == 1)
-		    		fileToCheck = new File(new File(".").getAbsolutePath()+"\\media\\music\\"+args[0]+".mp3");
+		    		fileToCheck = new File(MyUtils.GetRootFolder()+"\\media\\music\\"+args[0]+".mp3");
 		    	else
 		    		fileToCheck = new File(DownloadMusic(args[0], args[1], channel));
 		    		
@@ -362,7 +428,7 @@ public class AudioTest
 	    {
 		    JSONObject playlists = new JSONObject();
 			try {
-				playlists = new JSONObject(ReadFile(new File(".").getAbsolutePath()+"\\media\\music\\playlists.json"));
+				playlists = new JSONObject(ReadFile(MyUtils.GetRootFolder()+"\\media\\music\\playlists.json"));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -379,7 +445,7 @@ public class AudioTest
 	    public static void WritePlaylistJSON(JSONObject toWrite) {
 	    	FileWriter fileWriter;
 			try {
-				fileWriter = new FileWriter(new File(".").getAbsolutePath()+"\\assets\\playlists.json");
+				fileWriter = new FileWriter(MyUtils.GetRootFolder()+"\\media\\music\\playlists.json");
 				fileWriter.write(toWrite.toString());
 				fileWriter.close();
 			} catch (IOException e) {

@@ -6,19 +6,16 @@ import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
-public class Cena {
-	public Cena(String input, MessageReceivedEvent event) 
+public class Player {
+	public Player(String input, MessageReceivedEvent event) 
 	{
-		AudioTest aute = AudioTest.getInstance();
-		CommandHandler commandHandler = new CommandHandler(input, ".cena", " ");
+		CommandHandler commandHandler = new CommandHandler(input, ".play ", " ");
 		if (commandHandler.StartsWith()) 
 		{
-			System.out.println("test");
-			
 			boolean postMessage = !commandHandler.argumentHandler.Has("nm");
 			boolean playAudio = !commandHandler.argumentHandler.Has("na");
 			String voiceChannelToGet = commandHandler.argumentHandler.GetArgValue("ch:");
-    		File test = new File(MyUtils.GetRootFolder()+"\\media\\cena\\cena.mp3");
+    		File test = new File(MyUtils.GetRootFolder()+"\\media\\cena");
     		int totalFilesInFolder = test.list().length;
     		Random rand = new Random();
     		int cenaToUseID = rand.nextInt(totalFilesInFolder);
@@ -47,7 +44,7 @@ public class Cena {
 					.findAny().orElse(null);
 				}
 				
-				aute.PlayOneshot(test, playCenaTo);
+				//insert playing audio trough player
 			}
 		}
 	}

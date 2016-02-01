@@ -38,7 +38,7 @@ public class MessageListener extends ListenerAdapter
 	public static void main(String[] args)
     {
 		try {
-			jda = new JDABuilder("Rikiworo+bot@gmail.com", "223322").buildAsync();
+			jda = new JDABuilder(args[0],args[1]).buildAsync();
 	        jda.addEventListener(new MessageListener());
 	        aute = new AudioTest(jda);
 	        statistic = new UserStatistic(jda);

@@ -54,7 +54,7 @@ public class AudioTest
 		//TODO: Add GETTER SETTER for private things
 		private JDA jda;
 		private TextChannel channel;
-		private Player player;
+		Player player;
 		private String currentPlaylist;
 		private LinkedList<File> musicQuery;
 		private StringBuilder sBuilder;
@@ -309,13 +309,15 @@ public class AudioTest
 	    {
 	    	if (args.length == 1 || args.length == 2)
 	    	{
-		    	JSONObject playlistsJSON = new JSONObject(ReadFile("assets\\playlists.json"));
+		    	JSONObject playlistsJSON = new JSONObject(ReadFile("media\\playlists.json"));
 		    	File fileToCheck = null;
 		    	if (args.length == 1)
 		    		fileToCheck = new File(System.getProperty("user.pref")+"\\media\\music\\"+args[0]+".mp3");
 		    	else
 		    		fileToCheck = new File(DownloadMusic(args[0], args[1], channel));
 		    		
+		    	
+		    	JSONArray test = playlistsJSON.getJSONArray("");
 		    	//if (fileToCheck.exists()) {
 		    	//	playlistsJSON.put();
 				//}

@@ -53,9 +53,10 @@ public class AudioTest
 {
 		//TODO: Add GETTER SETTER for private things
 		private JDA jda;
-		private TextChannel channel;
 		private Player player;
+		private TextChannel channel;
 		private String currentPlaylist;
+		private VoiceChannel currentChannel = null;
 		private LinkedList<File> musicQuery;
 		private StringBuilder sBuilder;
 
@@ -186,17 +187,32 @@ public class AudioTest
 	    	}
 	    }
 
-		public void Play(String playlist, TextChannel channel)
+		public void Play(String playlist, VoiceChannel voiceChannel)
 		{
-			this.channel = channel;
-			currentPlaylist = playlist;
-			
-			StartPlaying();
+			if (currentChannel != null || jda.getAudioManager().isConnected())
+			{
+				if (player.isPlaying() || playerOneShot.isPlaying())
+					channel.sendMessage("Бот уже что-то играет");
+				else
+					if (currentChannel != channel)
+					{
+						Reconnect(voiceChannel);
+						currentChannel = voiceChannel;
+						currentPlaylist = playlist;
+						StartPlaying();
+					}
+			} else {
+				jda.getAudioManager().openAudioConnection(voiceChannel);
+				currentChannel = voiceChannel;
+				currentPlaylist = playlist;
+				StartPlaying();
+			}
 		}
 	    
 		public void Reconnect(VoiceChannel channel)
 		{
-			lastChannel = jda.getAudioManager().getConnectedChannel();
+			if (jda.getAudioManager().isConnected())
+				lastChannel = jda.getAudioManager().getConnectedChannel();
 			
 			jda.getAudioManager().closeAudioConnection();
 			try {
@@ -349,14 +365,7 @@ public class AudioTest
 
 	    // Загрузить плейлист из \media\music\playList.json
 	    public void LoadPlaylist(String playlistName, TextChannel channel) {
-    		JSONObject JSON = new JSONObject();
-			try {	
-				JSON = new JSONObject(ReadFile(MyUtils.GetRootFolder()+"\\media\\music\\playlists.json"));
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			
-			JSONArray playlists = JSON.getJSONArray(playlistName);
+    		JSONArray playlists = ReadFromJSON("\\media\\music\\playlists.json").getJSONArray(playlistName);
 			
 			musicQuery.clear();
 			for (Object music : playlists)
@@ -372,7 +381,7 @@ public class AudioTest
 	    {
 	    	if (playlistName != null)
 	    	{
-		    	JSONObject playlistsJSON = new JSONObject(ReadFile(MyUtils.GetRootFolder()+"\\media\\music\\playlists.json"));
+		    	JSONObject playlistsJSON = ReadFromJSON("\\media\\music\\playlists.json");
 		    	
 				if (!playlistsJSON.has(playlistName)) {
 					JSONArray newPlaylist = new JSONArray();
@@ -381,93 +390,92 @@ public class AudioTest
 				} else {
 					currentPlaylist = playlistName;
 				}
-				
-				WritePlaylistJSON(playlistsJSON);
+
+		    	WriteToJSON("\\media\\music\\playlists.json", playlistsJSON);
 	    	} else {
 	    		channel.sendMessage("Переданны неверные аргументы");
 	    	}
 	    }
 
 	    // Добавить трек в текущий плейлист
-	    //TODO: ДОБАВИТЬ КОД ДЛЯ ДОБАВЛЕНИЯ ТРЕКОВ В ПЛЕЙЛИСТЫ
-	    public void AddToPlaylist(String[] args)
+	    public void AddToPlaylist(String playlistName, String[] songs)
 	    {
-	    	if (args.length >= 2)
+	    	if (songs.length != 0)
 	    	{
-		    	JSONObject playlistsJSON = new JSONObject(ReadFile(MyUtils.GetRootFolder() + "\\media\\music\\playlists.json"));
+		    	JSONObject playlistsJSON = ReadFromJSON("\\media\\music\\playlists.json");
 		    	
 		    	File fileToCheck = null;
-		    	if (args.length == 1)
-		    		fileToCheck = new File(MyUtils.GetRootFolder()+"\\media\\music\\"+args[0]+".mp3");
-		    	else
-		    		fileToCheck = new File(DownloadMusic(args[0], args[1], channel));
+		    	//if (songs.length == 1)
+		    	fileToCheck = new File(MyUtils.GetRootFolder()+"\\media\\music\\"+songs[0]+".mp3");
+		    	//else
+		    	//	fileToCheck = new File(DownloadMusic(args[0], args[1], channel));
+				JSONArray playlist = playlistsJSON.getJSONArray(playlistName);
 
-		    	if (args[0] == "current") args[0] = currentPlaylist; 
-				JSONArray playlists = playlistsJSON.getJSONArray(currentPlaylist);
-
-				if(playlists != null)
+				if(playlist.length() != 0)
 				{
 			    	if (fileToCheck.exists()) {
-			    		playlists.put(fileToCheck.getName().split("\\.")[0]);
+			    		playlist.put(fileToCheck.getName().split("\\.")[0]);
 					}
-			    	playlistsJSON.put(currentPlaylist, playlists);
-			    	
-			    	WritePlaylistJSON(playlistsJSON);
+			    	playlistsJSON.put(songs[0], true);
+
+			    	WriteToJSON("\\media\\music\\playlists.json", playlistsJSON);
 				} else 
-					channel.sendMessage("Плейлист " + args[0] + " не найден");
+					channel.sendMessage("Плейлист " + playlistName + " не найден");
 	    	} else {
 	    		channel.sendMessage("Переданны неверные аргументы");
 	    	}
 	    }
 
 	    // Добавить трек в текущий плейлист
-	    //TODO: ДОБАВИТЬ КОД ДЛЯ ДОБАВЛЕНИЯ ТРЕКОВ В ПЛЕЙЛИСТЫ
-	    public void DeleteFromPlaylist(String[] args)
-	    {
-	    	if (args.length > 2)
-	    	{
-		    	JSONObject playlistsJSON = new JSONObject(ReadFile(MyUtils.GetRootFolder() + "\\media\\music\\playlists.json"));
-		    	
-		    	if (args[0] == "current") args[0] = currentPlaylist; 
-				JSONArray playlists = playlistsJSON.getJSONArray(args[0]);
-				
-				if(playlists != null)
-				{
-					for (int i=1; i<args.length; i++)
-				    	for (int j=0; j<playlists.length(); j++)
-				    		if(playlists.get(j) == args[i])
-				    			playlists.remove(j);
-			    	playlistsJSON.put(args[0], playlists);
-			    	
-			    	WritePlaylistJSON(playlistsJSON);
-				} else
-					channel.sendMessage("Плейлист " + args[0] + " не найден");
-	    	} else {
-	    		channel.sendMessage("Переданны неверные аргументы");
-	    	}
-	    }
+//	    public void DeleteFromPlaylist(String playlistName, String[] songs)
+//	    {
+//	    	if (args.length > 2)
+//	    	{
+//		    	JSONObject playlistsJSON = ReadFromJSON("\\media\\music\\playlists.json");
+//		    	
+//		    	if (args[0] == "current") args[0] = currentPlaylist; 
+//				JSONArray playlists = playlistsJSON.getJSONArray(args[0]);
+//				
+//				if(playlists != null)
+//				{
+//					for (int i=1; i<args.length; i++)
+//				    	for (int j=0; j<playlists.length(); j++)
+//				    		if(playlists.get(j) == args[i])
+//				    			playlists.remove(j);
+//			    	playlistsJSON.put(args[0], playlists);
+//			    	
+//			    	WriteToJSON("\\media\\music\\playlists.json", playlistsJSON);
+//				} else
+//					channel.sendMessage("Плейлист " + args[0] + " не найден");
+//	    	} else {
+//	    		channel.sendMessage("Переданны неверные аргументы");
+//	    	}
+//	    }
 	    
 	    // Показать все треки в плейлисте
-		public void PrintPlaylist()
+		public void PrintPlaylist(String playlistName)
 		{
-			if (jda.getAudioManager().isConnected())
-				if (musicQuery.isEmpty())
-					channel.sendMessage("Очередь пуста");
-				else
-				{
-					sBuilder.setLength(0);
-					int i = 1;
-					for(File track : musicQuery)
-					{
-		        		sBuilder.append(i + ": " + track.getName() + "\r\n");
-		        		i++;
-					}
-					channel.sendMessage("Очередь:\r\n" + sBuilder.toString());
-				}
-			else
-	        	channel.sendMessage("Бот не присоединен ни к одному каналу!\nПрисоединитесь к каналу используя команду !connect %channel%");
+			JSONObject playlistsJSON = ReadFromJSON("\\media\\music\\playlists.json");
+	    	
+			JSONArray playlist = playlistsJSON.getJSONArray(playlistName);
+			if (playlist.length() != 0)
+			{
+				sBuilder.setLength(0);
+				sBuilder.append("Плейлист " + playlistName + ":\n");
+				for(Object track : playlist)
+					sBuilder.append(track.toString() + "\n");
+				channel.sendMessage(sBuilder.toString());
+			}
 		}
 
+		public void PrintPlaylist()
+		{
+			if (currentPlaylist != "")
+				PrintPlaylist(currentPlaylist);
+			else
+				channel.sendMessage("В данный момент текущий плейлист не задан");
+		}
+		
 	    // Показать все плейлисты из \media\music\playList.json
 	    public void PrintAllPlaylists()
 	    {
@@ -485,19 +493,6 @@ public class AudioTest
 				sBuilder.append(name.toString()+"\n");
 			channel.sendMessage(sBuilder.toString());
 	    }
-
-	    // Обновить плейлист в \media\music\playList.json
-	    public static void WritePlaylistJSON(JSONObject toWrite) {
-	    	FileWriter fileWriter;
-			try {
-				fileWriter = new FileWriter(MyUtils.GetRootFolder()+"\\media\\music\\playlists.json");
-				fileWriter.write(toWrite.toString());
-				fileWriter.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    }
 	    
 	    // Получить ссылку для скачивания трека с Youtube
 	    public String GetYoutubeMusic(String id) throws JSONException, Exception
@@ -511,8 +506,31 @@ public class AudioTest
 	    // ---- ВЫНЕСТИ В ОТДЕЛЬНЫЕ КЛАССЫ ----//
 	    /////////////////////////////////////////
 	    
+	    // Подтянуть JSON файл
+	    public JSONObject ReadFromJSON(String path)
+	    {
+	    	JSONObject JSON = new JSONObject();
+			try {	
+				JSON = new JSONObject(ReadFile(MyUtils.GetRootFolder()+path));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			return JSON;
+	    }
 	    
-	    // Получить JSON из внешних источников
+	    // Записать в JSON файл
+	    public void WriteToJSON(String path, JSONObject toWrite) {
+	    	FileWriter fileWriter;
+			try {
+				fileWriter = new FileWriter(MyUtils.GetRootFolder()+path);
+				fileWriter.write(toWrite.toString());
+				fileWriter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	    }
+	    
+	    // Получить текст из внешних источников
 	    private String ReadUrl(String urlString) throws Exception {
 	        BufferedReader reader = null;
 	        try {

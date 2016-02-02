@@ -1,46 +1,79 @@
 package rinbot;
 
+import java.util.List;
+
 import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import rinbot.MessageListener.ClearThread;
 
 public class Player {
 	public Player(String input, MessageReceivedEvent event) 
 	{
 		AudioTest au = AudioTest.getInstance();
-		CommandHandler commandHandler = new CommandHandler(input, ".pl ", " ");
+		CommandHandler commandHandler = new CommandHandler(input, ".pl", " ");
 		TextChannel channel = event.getTextChannel();
 		
 		if (commandHandler.StartsWith()) 
 		{
-			au.SetChannel(event.getTextChannel());
+			au.SetChannel(channel);
 			
 			boolean isGet = !commandHandler.argumentHandler.Has("get");
-			boolean isGetAll = !commandHandler.argumentHandler.Has("getA");
+			boolean isGetAll = !commandHandler.argumentHandler.Has("all");
 			boolean isCurrent = !commandHandler.argumentHandler.Has("curr");
-			boolean isPlay = !commandHandler.argumentHandler.Has("p");
-			boolean isAdd = !commandHandler.argumentHandler.Has("a");
-			boolean isDelete = !commandHandler.argumentHandler.Has("d");
+			boolean isPlay = !commandHandler.argumentHandler.Has("play");
+			boolean isAdd = !commandHandler.argumentHandler.Has("add");
+			boolean isDelete = !commandHandler.argumentHandler.Has("del");
+			String voicechannel = commandHandler.argumentHandler.GetArgValue("ch:");
 			String playlistName = commandHandler.argumentHandler.GetArgValue("nm:");
-			String songName = commandHandler.argumentHandler.GetArgValue("sg:");
+			List<String> songName = commandHandler.argumentHandler.GetArgsValues("sg:");
 			
-			String[] temp = new String[2];
-			temp[0] = (playlistName == "") ? "current" : playlistName;
-			temp[1] = songName;
+			VoiceChannel voiceChannelToConnect = null;
+			if (voicechannel.equals("")) 
+			{
+				voiceChannelToConnect = event.getGuild().getVoiceStatusOfUser(event.getAuthor()).getChannel();
+			}
+			else
+			{
+				voiceChannelToConnect = event.getGuild()
+				.getVoiceChannels().stream()
+				.filter(x -> x.getName().equals(voicechannel))
+				.findAny().orElse(null);
+			}
 			
-			if (isGet)
-				au.PrintPlaylist();
-			else if (isGetAll)
+			if (isGet && playlistName != "" && songName.size() == 0)
+				au.PrintPlaylist(playlistName);
+			else if (isGet && isGetAll && playlistName == "" && songName.size() == 0)
 				au.PrintAllPlaylists();
-			else if (isCurrent)
+			else if (isGet && isCurrent && playlistName == "" && songName.size() == 0)
 				au.PrintPlaylist();
-			else if (isPlay)
-				au.Play(playlistName, channel);
-			else if (isAdd)
-				au.AddToPlaylist(temp);
-			else if (isDelete)
-				au.DeleteFromPlaylist(temp);
+			else if (isPlay && playlistName != "")
+			{
+				Runnable thread = new PlayThread(playlistName, voiceChannelToConnect);
+        		new Thread(thread).start();
+			}
+//			else if (isAdd)
+//				au.AddToPlaylist(temp);
+//			else if (isDelete)
+//				au.DeleteFromPlaylist(temp);
 			
 			event.getMessage().deleteMessage();
 		}
 	}
+	
+	public class PlayThread implements Runnable
+    {
+		String playlistName;
+		VoiceChannel voiceChannelToConnect;
+		
+    	public PlayThread(String playlistName, VoiceChannel voiceChannelToConnect) {
+			this.playlistName = playlistName;
+			this.voiceChannelToConnect = voiceChannelToConnect;
+		}
+    	
+		@Override
+		public void run() {
+			AudioTest.getInstance().Play(playlistName, voiceChannelToConnect);
+		}
+    }
 }

@@ -2,6 +2,7 @@ package rinbot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CommandHandler {
 	////Sample:
@@ -50,7 +51,6 @@ public class CommandHandler {
 	public class ArgumentHandler {
 		List<String> args;
 		
-		
 		public ArgumentHandler(String input, String splitBy) 
 		{
 			args = new ArrayList<String>(Arrays.asList(input.split(splitBy)));
@@ -59,14 +59,31 @@ public class CommandHandler {
 		public boolean Has(String toFind) 
 		{
 			//".music play"
-			return args.stream().filter(z -> z.equals(toFind)).findAny().orElse(null)!=null;
+			return args.stream()
+					.filter(z -> z.equals(toFind))
+					.findAny().orElse(null)!=null;
 		}
 		
 		public String GetArgValue(String mainArg) 
 		{
 			//song:Darude Sandstorm
 			//cmdHandler.argumentHandler.GetArgValue("u:") = Darude Sandstorm
-			return args.stream().filter(z -> z.startsWith(mainArg)).findAny().orElse("").replace(mainArg, "");
+			return args.stream()
+					.filter(z -> z.startsWith(mainArg))
+					.findAny().orElse("")
+					.replace(mainArg, "");
+		}
+		
+		public List<String> GetArgsValues(String mainArg)
+		{
+			//song:Darude Sandstorm song:Sad Trumpet
+			List<String> result = new ArrayList<String>();
+			for(String element : args.stream()
+									.filter(z -> z.startsWith(mainArg))
+									.collect(Collectors.toList()))
+				result.add(element.replace(mainArg, ""));
+			
+			return result;
 		}
 	}
 }

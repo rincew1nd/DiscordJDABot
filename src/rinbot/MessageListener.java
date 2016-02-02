@@ -55,6 +55,7 @@ public class MessageListener extends ListenerAdapter
     {	
     	new Cena(event.getMessage().getContent().toString(), event);
     	new Player(event.getMessage().getContent().toString(), event);
+    	new Test(event.getMessage().getContent().toString(), event);
     	
 
     	
@@ -167,22 +168,6 @@ public class MessageListener extends ListenerAdapter
         	);
         	event.getMessage().deleteMessage();
         }
-    }
-    
-    public class PlayThread implements Runnable
-    {
-    	MessageReceivedEvent event;
-    	
-    	public PlayThread(MessageReceivedEvent event) {
-			this.event = event;
-		}
-    	
-		@Override
-		public void run() {
-			String[] strarr = event.getMessage().getContent().split(";");
-        	
-            aute.Play(strarr[1], event.getTextChannel());
-		}
     }
     
     public class ClearThread implements Runnable

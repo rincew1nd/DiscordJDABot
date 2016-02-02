@@ -2,7 +2,9 @@ package rinbot;
 import java.io.File;
 import java.util.Random;
 
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
@@ -35,6 +37,10 @@ public class Cena {
 			
 			if (playAudio) 
 			{
+				User bot = event.getJDA().getUserById(
+						event.getJDA().getSelfInfo().getId()
+					);
+				
 				VoiceChannel playCenaTo = null;
 				if (voiceChannelToGet.equals("")) 
 				{
@@ -48,7 +54,15 @@ public class Cena {
 					.findAny().orElse(null);
 				}
 				
-				aute.PlayOneshot(cenaSound, playCenaTo);
+				if (playCenaTo != null)
+					if (playCenaTo.checkPermission(bot, Permission.VOICE_CONNECT))
+						aute.PlayOneshot(cenaSound, playCenaTo);
+					else
+						event.getTextChannel().sendMessage("Нельзя закинуть Сину в канал "
+								+ voiceChannelToGet + "\nНе хватает прав! :(");
+				else
+					event.getTextChannel().sendMessage("Нельзя закинуть Сину в канал "
+							+ voiceChannelToGet + "\nКанала не существует!");
 			}
 		}
 	}

@@ -11,22 +11,22 @@ public class Player {
 	public Player(String input, MessageReceivedEvent event) 
 	{
 		AudioTest au = AudioTest.getInstance();
-		CommandHandler commandHandler = new CommandHandler(input, ".pl", " ");
+		CommandHandler commandHandler = new CommandHandler(input, ".pl", ";");
 		TextChannel channel = event.getTextChannel();
 		
 		if (commandHandler.StartsWith()) 
 		{
 			au.SetChannel(channel);
 			
-			boolean isGet = !commandHandler.argumentHandler.Has("get");
-			boolean isGetAll = !commandHandler.argumentHandler.Has("all");
-			boolean isCurrent = !commandHandler.argumentHandler.Has("curr");
-			boolean isPlay = !commandHandler.argumentHandler.Has("play");
-			boolean isAdd = !commandHandler.argumentHandler.Has("add");
-			boolean isDelete = !commandHandler.argumentHandler.Has("del");
+			boolean isGet = commandHandler.argumentHandler.Has("get");
+			boolean isGetAll = commandHandler.argumentHandler.Has("all");
+			boolean isCurrent = commandHandler.argumentHandler.Has("curr");
+			boolean isPlay = commandHandler.argumentHandler.Has("play");
+			boolean isAdd = commandHandler.argumentHandler.Has("add");
+			boolean isDelete = commandHandler.argumentHandler.Has("del");
 			String voicechannel = commandHandler.argumentHandler.GetArgValue("ch:");
 			String playlistName = commandHandler.argumentHandler.GetArgValue("nm:");
-			List<String> songName = commandHandler.argumentHandler.GetArgsValues("sg:");
+			List<String> songsName = commandHandler.argumentHandler.GetArgsValues("sg:");
 			
 			VoiceChannel voiceChannelToConnect = null;
 			if (voicechannel.equals("")) 
@@ -41,21 +41,27 @@ public class Player {
 				.findAny().orElse(null);
 			}
 			
-			if (isGet && playlistName != "" && songName.size() == 0)
-				au.PrintPlaylist(playlistName);
-			else if (isGet && isGetAll && playlistName == "" && songName.size() == 0)
-				au.PrintAllPlaylists();
-			else if (isGet && isCurrent && playlistName == "" && songName.size() == 0)
-				au.PrintPlaylist();
-			else if (isPlay && playlistName != "")
+			if (voiceChannelToConnect == null)
 			{
-				Runnable thread = new PlayThread(playlistName, voiceChannelToConnect);
-        		new Thread(thread).start();
+				channel.sendMessage("Не удалось зайти в канал "
+							+ voicechannel + "\nКанала не существует!");
+			} else {
+				if (isGet && playlistName != "" && songsName.size() == 0)
+					au.PrintPlaylist(playlistName);
+				else if (isGet && isGetAll && playlistName == "" && songsName.size() == 0)
+					au.PrintAllPlaylists();
+				else if (isGet && isCurrent && playlistName == "" && songsName.size() == 0)
+					au.PrintPlaylist();
+				else if (isPlay && playlistName != "")
+				{
+					Runnable thread = new PlayThread(playlistName, voiceChannelToConnect);
+	        		new Thread(thread).start();
+				}
+				else if (isAdd)
+					au.AddToPlaylist(playlistName, songsName);
+				else if (isDelete)
+					au.DeleteFromPlaylist(playlistName, songsName);
 			}
-//			else if (isAdd)
-//				au.AddToPlaylist(temp);
-//			else if (isDelete)
-//				au.DeleteFromPlaylist(temp);
 			
 			event.getMessage().deleteMessage();
 		}

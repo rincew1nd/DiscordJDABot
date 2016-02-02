@@ -31,7 +31,7 @@ public class CommandHandler {
 		{
 			argumentHandler = new ArgumentHandler(
 					input.replace(command, ""),
-					argSplitter
+						argSplitter
 					);
 		}
 	}

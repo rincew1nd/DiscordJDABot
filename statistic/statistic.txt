@@ -1,13 +1,13 @@
-95477450720411648";"Nova Ragnarok Online";"25350
+95477450720411648";"Nova Ragnarok Online";"40990
 95533841099272192";"League of Legends";"8830
 95491420827168768";"League of Legends";"740
-95482280289509376";"Borderlands 2";"3150
+95482280289509376";"Nova Ragnarok Online";"6030";"Borderlands 2";"3150
 95481840332185600";"Nova Ragnarok Online";"8960";"Borderlands 2";"3110
-95529043549491200";"Hearthstone";"14510";"League of Legends";"2980
+95529043549491200";"Hearthstone";"14510";"League of Legends";"8110
 95570832494956544";"Nova Ragnarok Online";"9530
 95506762374844416";"FINAL FANTASY XIV";"410
-97042301351649280";"Borderlands";"190";"Super Meat Boy";"1710
-96596622921728000";"DOTA 2";"2680
+97042301351649280";"Borderlands";"8350";"Counter-Strike: Global Offensive";"560";"Super Meat Boy";"1710
+96596622921728000";"DOTA 2";"3540
 95614197911531520";"Nova Ragnarok Online";"2980
 142681152203915264";"Nova Ragnarok Online";"2980
 95611380731740160";"Nova Ragnarok Online";"190

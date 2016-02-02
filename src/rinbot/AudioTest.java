@@ -48,6 +48,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 public class AudioTest
 {
@@ -139,28 +140,33 @@ public class AudioTest
 		
 		public void PlayOneshot(File file, VoiceChannel channel)
 		{
-			if (player != null)
+			if (channel != null)
 			{
-				player.pause();
-				Reconnect(channel);
-	            oneShot = true;
+				if (player != null)
+				{
+					player.pause();
+					Reconnect(channel);
+		            oneShot = true;
+				} else {
+					jda.getAudioManager().openAudioConnection(channel);
+				}
+				
+				File audioFile = null;
+		    	try {
+		    		audioFile = file;
+					playerOneShot = new FilePlayer(audioFile);
+		            jda.getAudioManager().setSendingHandler(playerOneShot);
+		            playerOneShot.play();
+				} catch (IOException e) {
+		            e.printStackTrace();
+		        } catch (UnsupportedAudioFileException e) {
+		            e.printStackTrace();
+		        } catch (IllegalArgumentException e) {
+		            e.printStackTrace();
+		    	}
 			} else {
-				jda.getAudioManager().openAudioConnection(channel);
+				this.channel.sendMessage("Канал не найден.");
 			}
-			
-			File audioFile = null;
-	    	try {
-	    		audioFile = file;
-				playerOneShot = new FilePlayer(audioFile);
-	            jda.getAudioManager().setSendingHandler(playerOneShot);
-	            playerOneShot.play();
-			} catch (IOException e) {
-	            e.printStackTrace();
-	        } catch (UnsupportedAudioFileException e) {
-	            e.printStackTrace();
-	        } catch (IllegalArgumentException e) {
-	            e.printStackTrace();
-	    	}
 		}
 		
 		// Начать воспроизводить музыку
@@ -398,59 +404,62 @@ public class AudioTest
 	    }
 
 	    // Добавить трек в текущий плейлист
-	    public void AddToPlaylist(String playlistName, String[] songs)
+	    public void AddToPlaylist(String playlistName, List<String> songs)
 	    {
-	    	if (songs.length != 0)
+	    	if (songs.size() != 0)
 	    	{
 		    	JSONObject playlistsJSON = ReadFromJSON("\\media\\music\\playlists.json");
-		    	
-		    	File fileToCheck = null;
-		    	//if (songs.length == 1)
-		    	fileToCheck = new File(MyUtils.GetRootFolder()+"\\media\\music\\"+songs[0]+".mp3");
-		    	//else
-		    	//	fileToCheck = new File(DownloadMusic(args[0], args[1], channel));
+		    	System.out.print(playlistsJSON);
 				JSONArray playlist = playlistsJSON.getJSONArray(playlistName);
 
 				if(playlist.length() != 0)
 				{
-			    	if (fileToCheck.exists()) {
-			    		playlist.put(fileToCheck.getName().split("\\.")[0]);
-					}
-			    	playlistsJSON.put(songs[0], true);
-
-			    	WriteToJSON("\\media\\music\\playlists.json", playlistsJSON);
+			    	for (String song : songs)
+			    	{
+				    	File fileToCheck = null;
+				    	fileToCheck = new File(MyUtils.GetRootFolder()+"\\media\\music\\"+song+".mp3");
+				    	//fileToCheck = new File(DownloadMusic(args[0], args[1], channel));
+		
+					    if (fileToCheck.exists()) {
+					    	playlist.put(fileToCheck.getName().split("\\.")[0]);
+						}
+					    playlistsJSON.put(playlistName, (Object)playlist);
+			    	}
 				} else 
 					channel.sendMessage("Плейлист " + playlistName + " не найден");
+		    	
+		    	WriteToJSON("\\media\\music\\playlists.json", playlistsJSON);
 	    	} else {
 	    		channel.sendMessage("Переданны неверные аргументы");
 	    	}
 	    }
 
 	    // Добавить трек в текущий плейлист
-//	    public void DeleteFromPlaylist(String playlistName, String[] songs)
-//	    {
-//	    	if (args.length > 2)
-//	    	{
-//		    	JSONObject playlistsJSON = ReadFromJSON("\\media\\music\\playlists.json");
-//		    	
-//		    	if (args[0] == "current") args[0] = currentPlaylist; 
-//				JSONArray playlists = playlistsJSON.getJSONArray(args[0]);
-//				
-//				if(playlists != null)
-//				{
-//					for (int i=1; i<args.length; i++)
-//				    	for (int j=0; j<playlists.length(); j++)
-//				    		if(playlists.get(j) == args[i])
-//				    			playlists.remove(j);
-//			    	playlistsJSON.put(args[0], playlists);
-//			    	
-//			    	WriteToJSON("\\media\\music\\playlists.json", playlistsJSON);
-//				} else
-//					channel.sendMessage("Плейлист " + args[0] + " не найден");
-//	    	} else {
-//	    		channel.sendMessage("Переданны неверные аргументы");
-//	    	}
-//	    }
+	    public void DeleteFromPlaylist(String playlistName, List<String> songs)
+	    {
+	    	if (songs.size() > 0)
+	    	{
+		    	JSONObject playlistsJSON = ReadFromJSON("\\media\\music\\playlists.json");
+				JSONArray playlist = playlistsJSON.getJSONArray(playlistName);
+
+				if(playlist != null)
+				{
+			    	for (String song : songs)
+			    		for (int j=0; j<playlist.length(); j++)
+			    		{
+					    	System.out.print(playlist.get(j) + " - " + song + " | " + playlist.get(j).equals(song) + "\n");
+			    			if(playlist.get(j).toString().equals(song))
+			    				playlist.remove(j);
+			    		}
+				    playlistsJSON.put(playlistName, (Object)playlist);
+				} else
+					channel.sendMessage("Плейлист " + playlistName + " не найден");
+		    	
+		    	WriteToJSON("\\media\\music\\playlists.json", playlistsJSON);
+	    	} else {
+	    		channel.sendMessage("Переданны неверные аргументы");
+	    	}
+	    }
 	    
 	    // Показать все треки в плейлисте
 		public void PrintPlaylist(String playlistName)

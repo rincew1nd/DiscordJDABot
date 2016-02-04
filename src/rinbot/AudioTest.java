@@ -19,7 +19,6 @@ package rinbot;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.audio.player.FilePlayer;
 import net.dv8tion.jda.audio.player.Player;
-import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.VoiceChannel;
 
@@ -287,76 +286,38 @@ public class AudioTest
 		}
 
 	    // Скачать трек в папку \media\music
-	    public String DownloadMusic(String URL, String fileName, TextChannel channel)
+	    public String DownloadMusic(String URL, String fileName)
 	    {
-	    	URLConnection conn;
-	        InputStream is;
-	        OutputStream outstream;
 	        String path;
 	        
-	        if (URL.contains("!y"))
-			{
-	        	int retryCount = 0;
-	        	Message mes = null;
-	        	String urlYtb = "";
-	        	while(true)
-	        	{
-	        		try
-	        		{
-		        		urlYtb = GetYoutubeMusic(URL.substring(2, URL.length()));
-	        		} catch (Exception e) {
-	        			if (retryCount == 0)
-	        			{	
-							try {
-								URL url = new URL("http://www.youtubeinmp3.com/download/?video=http://www.youtube.com/watch?v="+URL.substring(2, URL.length()) + "&autostart=1");
-								url.openConnection();
-							} catch (MalformedURLException e1) {
-								e1.printStackTrace();
-							} catch (IOException e1) {
-								e1.printStackTrace();
-							}
-	        				mes = channel.sendMessage("Подождите немного...");
-	        				System.out.print("Ждём\n");
-	        			}
-	        			else if (retryCount == 2)
-	        			{
-	        				mes.deleteMessage();
-	        				channel.sendMessage("Загрузка видео не началась в течении двух минут.\n" +
-	        									"Возможно лежит сервер www.youtubeinmp3.com.\n" +
-	        									"А если видео слишком большое, повторите через пару минут.");
-	        				return null;
-	        			}
-	        		}
-
-		        	if (urlYtb != "")
-		        	{
-		        		URL = urlYtb;
-		        		break;
-		        	}
-	        		
-					try {
-        				retryCount++;
-						Thread.sleep(60000);
-					} catch (InterruptedException e1) {
-						System.out.print("Случился пиздец...");
-						e1.printStackTrace();
-					}
-	        	}
-			}
+	        if (fileName == "")
+	        {
+		        fileName = URL.substring(URL.lastIndexOf('/')+1, URL.lastIndexOf('.')-1);
+		        int i = 0;
+		        while (new File(System.getProperty("user.dir") + "\\media\\music\\" + fileName + ".mp3").exists())
+		        {
+		        	if (fileName.contains("("))
+		        		fileName = fileName.substring(0, fileName.lastIndexOf('(')-1) + "(" + i + ")";
+		        	else
+		        		fileName = fileName + "(" + i + ")";
+		        	i++;
+		        }
+	        }
 	        
 	        if (!new File(System.getProperty("user.dir") + "\\media\\music\\" + fileName + ".mp3").exists())
 	        {
 	        	path = System.getProperty("user.dir") + "\\media\\music\\" + fileName + ".mp3";
 				try {
-					conn = new URL(URL).openConnection();
-					is = conn.getInputStream();
-					outstream = new FileOutputStream(new File(path));
-			        byte[] buffer = new byte[4096];
-			        int len;
-			        while ((len = is.read(buffer)) > 0) {
-			            outstream.write(buffer, 0, len);
-			        }
-			        outstream.close();
+					URLConnection conn = new URL(URL).openConnection();
+				    InputStream is = conn.getInputStream();
+
+				    OutputStream outstream = new FileOutputStream(new File("\\media\\music\\" + fileName + ".mp3"));
+				    byte[] buffer = new byte[4096];
+				    int len;
+				    while ((len = is.read(buffer)) > 0) {
+				        outstream.write(buffer, 0, len);
+				    }
+				    outstream.close();
 				} catch (MalformedURLException e) {
 					channel.sendMessage("Неправильный URL");
 					e.printStackTrace();

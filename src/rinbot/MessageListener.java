@@ -27,6 +27,7 @@ import javax.security.auth.login.LoginException;
 import commands.Cena;
 import commands.Playlist;
 import commands.Test;
+import commands.Z0rde;
 
 import java.io.File;
 import java.util.List;
@@ -73,6 +74,7 @@ public class MessageListener extends ListenerAdapter
     	new Cena(event);
     	new Playlist(event);
     	new Test(event);
+    	new Z0rde(event);
     	
     	Random rnd = new Random();
     	String message = event.getMessage().getContent();

@@ -10,7 +10,8 @@ import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import rinbot.AudioTest;
 import rinbot.MyUtils;
 
-public class Cena implements ICommandHandler {
+public class Cena
+{
 	public Cena(MessageReceivedEvent event) 
 	{
 		AudioTest aute = AudioTest.getInstance();
@@ -67,7 +68,6 @@ public class Cena implements ICommandHandler {
 //					event.getTextChannel().sendMessage("Нельзя закинуть Сину в канал "
 //							+ voiceChannelToGet + "\nКанала не существует!");
 			}
-			
 		}
 	}
 }

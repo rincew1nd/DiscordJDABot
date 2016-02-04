@@ -25,8 +25,10 @@ public class Playlist {
 			boolean isPlay = commandHandler.argumentHandler.Has("play");
 			boolean isAdd = commandHandler.argumentHandler.Has("add");
 			boolean isDelete = commandHandler.argumentHandler.Has("del");
+			boolean isDownload = commandHandler.argumentHandler.Has("dwl");
 			String voicechannel = commandHandler.argumentHandler.GetArgValue("ch:");
 			String playlistName = commandHandler.argumentHandler.GetArgValue("nm:");
+			String URL = commandHandler.argumentHandler.GetArgValue("url:");
 			List<String> songsName = commandHandler.argumentHandler.GetArgsValues("sg:");
 			
 			VoiceChannel voiceChannelToConnect = null;
@@ -62,6 +64,8 @@ public class Playlist {
 					au.AddToPlaylist(playlistName, songsName);
 				else if (isDelete)
 					au.DeleteFromPlaylist(playlistName, songsName);
+				else if (isDownload)
+					au.DownloadMusic(URL, playlistName);
 			}
 			
 			event.getMessage().deleteMessage();

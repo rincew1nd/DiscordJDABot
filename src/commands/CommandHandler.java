@@ -1,4 +1,4 @@
-package rinbot;
+package commands;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,6 +54,16 @@ public class CommandHandler {
 		public ArgumentHandler(String input, String splitBy) 
 		{
 			args = new ArrayList<String>(Arrays.asList(input.split(splitBy)));
+		}
+
+		public boolean Empty() 
+		{
+			return (args.size() == 0) ? true : false;
+		}
+
+		public int Count() 
+		{
+			return args.size();
 		}
 		
 		public boolean Has(String toFind) 

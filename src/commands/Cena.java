@@ -1,4 +1,4 @@
-package rinbot;
+package commands;
 import java.io.File;
 import java.util.Random;
 
@@ -7,6 +7,8 @@ import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import rinbot.AudioTest;
+import rinbot.MyUtils;
 
 public class Cena {
 	public Cena(String input, MessageReceivedEvent event) 
@@ -57,13 +59,15 @@ public class Cena {
 				if (playCenaTo != null)
 					if (playCenaTo.checkPermission(bot, Permission.VOICE_CONNECT))
 						aute.PlayOneshot(cenaSound, playCenaTo);
-					else
-						event.getTextChannel().sendMessage("Нельзя закинуть Сину в канал "
-								+ voiceChannelToGet + "\nНе хватает прав! :(");
-				else
-					event.getTextChannel().sendMessage("Нельзя закинуть Сину в канал "
-							+ voiceChannelToGet + "\nКанала не существует!");
+//					else
+//						event.getTextChannel().sendMessage("Нельзя закинуть Сину в канал "
+//								+ voiceChannelToGet + "\nНе хватает прав! :(");
+//				else
+//					event.getTextChannel().sendMessage("Нельзя закинуть Сину в канал "
+//							+ voiceChannelToGet + "\nКанала не существует!");
 			}
+			
+			event.getMessage().deleteMessage();
 		}
 	}
 }

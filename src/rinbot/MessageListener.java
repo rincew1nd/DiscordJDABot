@@ -23,6 +23,10 @@ import net.dv8tion.jda.hooks.ListenerAdapter;
 
 import javax.security.auth.login.LoginException;
 
+import commands.Cena;
+import commands.Playlist;
+import commands.Test;
+
 import java.io.File;
 import java.util.List;
 import java.util.Random;
@@ -53,13 +57,12 @@ public class MessageListener extends ListenerAdapter
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {	
+    	if (event.getAuthor().getUsername().equalsIgnoreCase("RinBot")) return;
+    	
     	new Cena(event.getMessage().getContent().toString(), event);
-    	new Player(event.getMessage().getContent().toString(), event);
+    	new Playlist(event.getMessage().getContent().toString(), event);
     	new Test(event.getMessage().getContent().toString(), event);
     	
-
-    	
-    	if (event.getAuthor().getUsername().equalsIgnoreCase("RinBot")) return;
     	Random rnd = new Random();
     	String message = event.getMessage().getContent();
     	String[] messageArr = message.split("\\s+");

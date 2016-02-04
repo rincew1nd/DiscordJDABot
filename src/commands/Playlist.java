@@ -1,14 +1,14 @@
-package rinbot;
+package commands;
 
 import java.util.List;
 
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import rinbot.MessageListener.ClearThread;
+import rinbot.AudioTest;
 
-public class Player {
-	public Player(String input, MessageReceivedEvent event) 
+public class Playlist {
+	public Playlist(String input, MessageReceivedEvent event) 
 	{
 		AudioTest au = AudioTest.getInstance();
 		CommandHandler commandHandler = new CommandHandler(input, ".pl", ";");

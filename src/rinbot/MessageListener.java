@@ -18,6 +18,7 @@ package rinbot;
 import net.dv8tion.jda.*;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.events.message.MessageAcknowledgedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 
@@ -53,15 +54,25 @@ public class MessageListener extends ListenerAdapter
 			e.printStackTrace();
 		}
     }
-    
+	
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {	
+    	if (event.getMessage().getMentionedUsers().stream().filter(z -> z.getUsername().equals(jda.getSelfInfo().getUsername())).count() == 1)
+        	if (event.getMessage().getChannelId().equalsIgnoreCase("95861645816922112"))
+        		jda.getTextChannelById("126041398473523201").sendMessage(
+        				new MessageBuilder()
+        				.appendString("` ")
+        				.appendEveryoneMention()
+        				.appendString(event.getMessage().getContent().replace("@"+jda.getSelfInfo().getUsername()+" ", ""))
+        				.appendString(" `")
+        				.build()
+        			);
     	if (event.getAuthor().getUsername().equalsIgnoreCase("RinBot")) return;
     	
-    	new Cena(event.getMessage().getContent().toString(), event);
-    	new Playlist(event.getMessage().getContent().toString(), event);
-    	new Test(event.getMessage().getContent().toString(), event);
+    	new Cena(event);
+    	new Playlist(event);
+    	new Test(event);
     	
     	Random rnd = new Random();
     	String message = event.getMessage().getContent();

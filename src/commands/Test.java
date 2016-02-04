@@ -6,13 +6,14 @@ import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 public class Test {
-	public Test(String input, MessageReceivedEvent event) 
+	public Test(MessageReceivedEvent event) 
 	{
-		CommandHandler commandHandler = new CommandHandler(input, ".test ", " ");
+		CommandHandler commandHandler = new CommandHandler(event.getMessage().getContent(), ".test ", " ");
 		TextChannel channel = event.getTextChannel();
 		
 		if (commandHandler.StartsWith()) 
 		{
+			event.getMessage().deleteMessage();
 			boolean one = commandHandler.argumentHandler.Has("one:");
 			String two = commandHandler.argumentHandler.GetArgValue("two:");
 			List<String> thr = commandHandler.argumentHandler.GetArgsValues("thr:");

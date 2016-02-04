@@ -9,14 +9,15 @@ import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import rinbot.AudioTest;
 
 public class Z0rde {
-	public Z0rde(String input, MessageReceivedEvent event) 
+	public Z0rde(MessageReceivedEvent event) 
 	{
 		AudioTest aute = AudioTest.getInstance();
-		CommandHandler commandHandler = new CommandHandler(input, ".zorde", " ");
+		CommandHandler commandHandler = new CommandHandler(event.getMessage().getContent(), ".zorde", " ");
 		TextChannel channel = event.getTextChannel();
 		
 		if (commandHandler.StartsWith())
 		{
+			event.getMessage().deleteMessage();
 			boolean thr = commandHandler.argumentHandler.Has("max");
 			
 			if (thr)

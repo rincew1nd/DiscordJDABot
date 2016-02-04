@@ -8,14 +8,15 @@ import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import rinbot.AudioTest;
 
 public class Playlist {
-	public Playlist(String input, MessageReceivedEvent event) 
+	public Playlist(MessageReceivedEvent event) 
 	{
 		AudioTest au = AudioTest.getInstance();
-		CommandHandler commandHandler = new CommandHandler(input, ".pl", ";");
+		CommandHandler commandHandler = new CommandHandler(event.getMessage().getContent(), ".pl", ";");
 		TextChannel channel = event.getTextChannel();
 		
 		if (commandHandler.StartsWith()) 
 		{
+			event.getMessage().deleteMessage();
 			au.SetChannel(channel);
 			
 			boolean isGet = commandHandler.argumentHandler.Has("get");

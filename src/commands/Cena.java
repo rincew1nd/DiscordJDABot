@@ -10,14 +10,14 @@ import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import rinbot.AudioTest;
 import rinbot.MyUtils;
 
-public class Cena {
-	public Cena(String input, MessageReceivedEvent event) 
+public class Cena implements ICommandHandler {
+	public Cena(MessageReceivedEvent event) 
 	{
 		AudioTest aute = AudioTest.getInstance();
-		CommandHandler commandHandler = new CommandHandler(input, ".cena", " ");
+		CommandHandler commandHandler = new CommandHandler(event.getMessage().getContent(), ".cena", " ");
 		if (commandHandler.StartsWith()) 
 		{
-			System.out.println("test");
+			event.getMessage().deleteMessage();
 			
 			boolean postMessage = !commandHandler.argumentHandler.Has("nm");
 			boolean playAudio = !commandHandler.argumentHandler.Has("na");
@@ -30,7 +30,8 @@ public class Cena {
 			File[] cenaFolder = new File(MyUtils.GetRootFolder()+"\\media\\cena").listFiles();
 			File cenaToUse = cenaFolder[cenaToUseID];
 			
-			if (postMessage) {
+			if (postMessage)
+			{
 				TextChannel sendCenaTo = event.getTextChannel();
 				sendCenaTo.sendMessage("AND HIS NAME IS...");
 				sendCenaTo.sendFile(cenaToUse);
@@ -67,7 +68,6 @@ public class Cena {
 //							+ voiceChannelToGet + "\nКанала не существует!");
 			}
 			
-			event.getMessage().deleteMessage();
 		}
 	}
 }

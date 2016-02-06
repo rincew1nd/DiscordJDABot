@@ -196,7 +196,7 @@ public class AudioTest
 		{
 			if (currentChannel != null || jda.getAudioManager().isConnected())
 			{
-				if (player.isPlaying() || playerOneShot.isPlaying())
+				if (player != null && playerOneShot != null && (player.isPlaying() || playerOneShot.isPlaying()))
 					channel.sendMessage("Бот уже что-то играет");
 				else
 					if (currentChannel != channel)

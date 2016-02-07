@@ -1,59 +1,87 @@
 package commands;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandHandler {
-	////Sample:
-	//...handle input...
-	//CommandHandler musicCommandHandler = new CommandHandler(input, ".music");
-	//if (musicCommandHandler.StartsWith())
-	//{
-	//	if (musicCommandHandler.argumentHandler.Has(play)) 
-	//		{
-	//			player.Play();
-	//		}
-	//
-	//	String songToUse = musicCommandHandler.argumentHandler.GetArgValue(song:));
-	//}
+	private String _cmd;
+	private String _arg;
+	private String _param;
+	private List<String> _keywords;
+
+	private boolean _isCommand;
+	private ArgumentHandler _argumentHandler;
 	
+	private String _textInput;
 	
-	public String cmd;
-	public String textInput;
-	public ArgumentHandler argumentHandler;
-	
-	CommandHandler(String input, String command, String argSplitter) 
+	public CommandHandler(String command, String argSplitter, String paramSplitter) 
 	{
-		textInput = input;
-		cmd = command;		
-		if (StartsWith()) 
-		{
-			argumentHandler = new ArgumentHandler(
-					input.replace(command, ""),
-						argSplitter
-					);
-		}
+		_cmd = command;
+		_arg = argSplitter;
+		_param = paramSplitter;
 	}
 	
-	
-	public boolean StartsWith() 
+	public CommandHandler AddKeywords(ArrayList<String> keywords)
 	{
-		return textInput.startsWith(cmd);
+		_keywords = keywords;
+		
+		return this;
+	}
+
+	public CommandHandler ParseString(String input)
+	{
+		_isCommand = input.startsWith(_cmd);
+		_textInput = input.replace(_cmd, "");
+		_argumentHandler = new ArgumentHandler();
+		
+		return this;
 	}
 	
-	public boolean Contains() 
+	public boolean isCommand()
 	{
-		return textInput.contains(cmd);
+		return _isCommand;
 	}
-	
+
+	public ArgumentHandler GetArgHandler()
+	{
+		return _argumentHandler;
+	}
 	
 	public class ArgumentHandler {
 		List<String> args;
 		
-		public ArgumentHandler(String input, String splitBy) 
+		public ArgumentHandler() 
 		{
-			args = new ArrayList<String>(Arrays.asList(input.split(splitBy)));
+			args = new ArrayList<String>();
+			if (_keywords != null)
+			{
+				String argument = "";
+				for (String element : _textInput.split(_arg))
+				{
+					if (!element.equals(""))
+					{
+						if (element.contains(_param))
+						{
+							System.out.println(element.substring(0, element.indexOf(_param)+1));
+							if (_keywords.contains(element.substring(0, element.indexOf(_param)+1)))
+							{
+								if (argument.length() != 0)
+									args.add(argument);
+								argument = element;
+							}
+						} else if (_keywords.contains(element))
+						{
+							if (argument.length() != 0)
+								args.add(argument);
+							args.add(element);
+						} else {
+							argument += " " + element;
+						}
+					}
+				}
+				args.add(argument);
+			}
 		}
 
 		public boolean Empty() 
@@ -68,16 +96,13 @@ public class CommandHandler {
 		
 		public boolean Has(String toFind) 
 		{
-			//".music play"
 			return args.stream()
 					.filter(z -> z.equals(toFind))
-					.findAny().orElse(null)!=null;
+					.count() != 0;
 		}
 		
 		public String GetArgValue(String mainArg) 
 		{
-			//song:Darude Sandstorm
-			//cmdHandler.argumentHandler.GetArgValue("u:") = Darude Sandstorm
 			return args.stream()
 					.filter(z -> z.startsWith(mainArg))
 					.findAny().orElse("")
@@ -86,7 +111,6 @@ public class CommandHandler {
 		
 		public List<String> GetArgsValues(String mainArg)
 		{
-			//song:Darude Sandstorm song:Sad Trumpet
 			List<String> result = new ArrayList<String>();
 			for(String element : args.stream()
 									.filter(z -> z.startsWith(mainArg))

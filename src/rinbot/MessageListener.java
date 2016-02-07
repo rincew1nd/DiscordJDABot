@@ -18,7 +18,6 @@ package rinbot;
 import net.dv8tion.jda.*;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.VoiceChannel;
-import net.dv8tion.jda.events.message.MessageAcknowledgedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 
@@ -36,8 +35,8 @@ import java.util.Random;
 public class MessageListener extends ListenerAdapter
 {
 	public static JDA jda;
-	public static AudioTest aute;
-	public static StringBuilder sBuilder;
+	public static MusicPlayer musicPlayer;
+	public static PlaylistManager playlistManager;
 	public static UserStatistic statistic;
 	
 	public static void main(String[] args)
@@ -45,10 +44,10 @@ public class MessageListener extends ListenerAdapter
 		try {
 			jda = new JDABuilder(args[0],args[1]).buildAsync();
 	        jda.addEventListener(new MessageListener());
-	        aute = AudioTest.getInstance();
-	        aute.AudioTestInit(jda);
+	        musicPlayer = MusicPlayer.getInstance();
+	        musicPlayer.MusicPlayerInit(jda);
+	        playlistManager = PlaylistManager.getInstance();
 	        statistic = new UserStatistic(jda);
-	        sBuilder = new StringBuilder();
 		} catch (LoginException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
@@ -109,46 +108,47 @@ public class MessageListener extends ListenerAdapter
         	event.getMessage().deleteMessage();
 		} else if (message.equalsIgnoreCase(".skip"))
         {
-        	aute.Skip(event.getTextChannel());
+			musicPlayer.SetChannel(event.getTextChannel());
+			musicPlayer.Skip();
         	event.getMessage().deleteMessage();
         } else if (message.equalsIgnoreCase(".stop"))
         {
-        	aute.Stop(event.getTextChannel());
+        	musicPlayer.Stop(event.getTextChannel());
         	event.getMessage().deleteMessage();
         } if (messageArr[0].equalsIgnoreCase(".volume"))
         {
         	if(messageArr.length == 2 && tryParseFloat(messageArr[1]))
         	{
         		event.getTextChannel().sendMessage("Громкость - " + Float.parseFloat(messageArr[1]));
-        		aute.GetPlayer().setVolume(Float.parseFloat(messageArr[1]));
+        		musicPlayer.GetPlayer().setVolume(Float.parseFloat(messageArr[1]));
         	}
         	else
         		event.getTextChannel().sendMessage("Неправильные аргументы команды.\r\n.volume %целое_число%");
         	event.getMessage().deleteMessage();
         } else if (message.equalsIgnoreCase(".ml"))
         {
-        	aute.GetMusicList(event.getTextChannel());
+        	playlistManager.SetChannel(event.getTextChannel());
+	        playlistManager.GetMusicList();
         	event.getMessage().deleteMessage();
         } else if (message.equalsIgnoreCase(".help"))
         {
-        	sBuilder.setLength(0);
+        	MessageBuilder messageBuilder = new MessageBuilder();
+        	messageBuilder.appendString("Список команд:\r\n");
+        	messageBuilder.appendString("\t.help - запрос помощи\r\n");
+        	messageBuilder.appendString("\t.cat - постит рандомного кота в конфу\r\n");
+        	messageBuilder.appendString("\t.rnd %целое_число% - получить рандомное целое число от 0 до %целое_число%\r\n");
+        	messageBuilder.appendString("Войс:\r\n");
+        	messageBuilder.appendString("\t.con %channel% - присоединиться к каналу\r\n");
+        	messageBuilder.appendString("\t.dcon - выходит из войс чата\r\n");
+        	messageBuilder.appendString("\t.ml - список загруженной музыки\r\n");
+        	messageBuilder.appendString("\t.pl;current - плейлист\r\n");
+        	messageBuilder.appendString("\t.play;%URL%;%название% - скачивает песню и добавляет её в плейлист\r\n");
+        	messageBuilder.appendString("\t.play;!y%youtube-id%;%название% - скачивает песню c youtube и добавляет её в плейлист\r\n");
+        	messageBuilder.appendString("\t.play;%название% - добавляет скаченную песню в плейлист\r\n");
+        	messageBuilder.appendString("\t.stop - останавливает музыку\r\n");
+        	messageBuilder.appendString("\t.skip - пропускает песню\r\n");
         	
-        	sBuilder.append("Список команд:\r\n");
-        	sBuilder.append("\t.help - запрос помощи\r\n");
-        	sBuilder.append("\t.cat - постит рандомного кота в конфу\r\n");
-        	sBuilder.append("\t.rnd %целое_число% - получить рандомное целое число от 0 до %целое_число%\r\n");
-        	sBuilder.append("Войс:\r\n");
-        	sBuilder.append("\t.con %channel% - присоединиться к каналу\r\n");
-        	sBuilder.append("\t.dcon - выходит из войс чата\r\n");
-        	sBuilder.append("\t.ml - список загруженной музыки\r\n");
-        	sBuilder.append("\t.pl;current - плейлист\r\n");
-        	sBuilder.append("\t.play;%URL%;%название% - скачивает песню и добавляет её в плейлист\r\n");
-        	sBuilder.append("\t.play;!y%youtube-id%;%название% - скачивает песню c youtube и добавляет её в плейлист\r\n");
-        	sBuilder.append("\t.play;%название% - добавляет скаченную песню в плейлист\r\n");
-        	sBuilder.append("\t.stop - останавливает музыку\r\n");
-        	sBuilder.append("\t.skip - пропускает песню\r\n");
-        	
-        	event.getAuthor().getPrivateChannel().sendMessage(sBuilder.toString());
+        	event.getAuthor().getPrivateChannel().sendMessage(messageBuilder.build());
         	event.getMessage().deleteMessage();
         } else if(event.getMessage().getContent().equalsIgnoreCase(".cat"))
         {

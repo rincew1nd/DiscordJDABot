@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -17,6 +18,9 @@ import java.util.regex.Pattern;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import net.dv8tion.jda.entities.VoiceChannel;
+import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 public class Utils {
 
@@ -86,11 +90,13 @@ public class Utils {
 		}
 	}
 	
-	private static String ReadUrl(String urlString) throws Exception
+	@SuppressWarnings("unused")
+	private static String ReadUrl(String urlString)
 	{
 		BufferedReader reader = null;
 		try {
-			URL url = new URL(urlString);
+			URL url;
+			url = new URL(urlString);
 			reader = new BufferedReader(new InputStreamReader(url.openStream()));
 			StringBuffer buffer = new StringBuffer();
 			int read;
@@ -99,10 +105,19 @@ public class Utils {
 				buffer.append(chars, 0, read); 
 			
 			return buffer.toString();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		} finally {
 			if (reader != null)
-				reader.close();
+				try {
+					reader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
+		return null;
 	}
 	
 	public static String ReadFile(String path)
@@ -115,5 +130,39 @@ public class Utils {
 			e.printStackTrace();
 		}
 			return null;
+	}
+	
+    public static boolean tryParseInt(String value) {  
+        try {  
+            Integer.parseInt(value);  
+            return true;
+         } catch (NumberFormatException e) {  
+            return false;  
+         }  
+   }
+
+    public static boolean tryParseFloat(String value) {  
+        try {  
+            Float.parseFloat(value);  
+            return true;
+         } catch (NumberFormatException e) {  
+            return false;  
+         }  
+   }
+	
+	public static VoiceChannel GetVoiceChannel(MessageReceivedEvent event, String voiceChannelToGet)
+	{
+		VoiceChannel playTo = null;
+		if (voiceChannelToGet.equals(""))
+			playTo = event.getGuild().getVoiceStatusOfUser(event.getAuthor()).getChannel();
+		else
+			playTo = event.getGuild().getVoiceChannels().stream()
+					.filter(x -> x.getName().equals(voiceChannelToGet)).findAny().orElse(null);
+		return playTo;
+	}
+
+	public static VoiceChannel GetUserVoiceChannel(MessageReceivedEvent event)
+	{
+		return event.getGuild().getVoiceStatusOfUser(event.getAuthor()).getChannel();
 	}
 }

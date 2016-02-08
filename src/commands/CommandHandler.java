@@ -1,25 +1,31 @@
 package commands;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandHandler {
 	private String _cmd;
 	private String _arg;
 	private String _param;
-	private List<String> _keywords;
+	private ArrayList<String> _keywords;
 
 	private boolean _isCommand;
 	private ArgumentHandler _argumentHandler;
 	
 	private String _textInput;
 	
-	public CommandHandler(String command, String argSplitter, String paramSplitter) 
+	public CommandHandler()
+	{
+		
+	}
+	
+	public CommandHandler Setup(String command, String argSplitter, String paramSplitter) 
 	{
 		_cmd = command;
 		_arg = argSplitter;
 		_param = paramSplitter;
+		
+		return this;
 	}
 	
 	public CommandHandler AddKeywords(ArrayList<String> keywords)
@@ -49,7 +55,7 @@ public class CommandHandler {
 	}
 	
 	public class ArgumentHandler {
-		List<String> args;
+		ArrayList<String> args;
 		
 		public ArgumentHandler() 
 		{
@@ -109,9 +115,9 @@ public class CommandHandler {
 					.replace(mainArg, "");
 		}
 		
-		public List<String> GetArgsValues(String mainArg)
+		public ArrayList<String> GetArgsValues(String mainArg)
 		{
-			List<String> result = new ArrayList<String>();
+			ArrayList<String> result = new ArrayList<String>();
 			for(String element : args.stream()
 									.filter(z -> z.startsWith(mainArg))
 									.collect(Collectors.toList()))

@@ -20,7 +20,6 @@ import net.dv8tion.jda.entities.TextChannel;
 public class PlaylistManager {
 
 	private StringBuilder _sBuilder;
-	private MusicPlayer _musicPlayer = MusicPlayer.getInstance();
 	private TextChannel _textChannel;
 	
 	public static class PlaylistManagerHolder {

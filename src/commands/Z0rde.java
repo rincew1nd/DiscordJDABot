@@ -1,24 +1,16 @@
 package commands;
 
 import java.util.List;
-
-import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import rinbot.Utils;
 
-public class Z0rde {
-	public Z0rde(MessageReceivedEvent event) 
-	{
-		CommandHandler commandHandler = new CommandHandler(".z0rde", " ", "")
-			.ParseString(event.getMessage().getContent());
-		TextChannel channel = event.getTextChannel();
-		
-		if (commandHandler.isCommand())
-		{
-			event.getMessage().deleteMessage();
-			
-			channel.sendMessage("http://z0r.de/" + Utils.GetRandom(GetLastZ0rde()));
-		}
+public class Z0rde extends Command
+{
+	public Z0rde() {}
+
+	@Override
+	public void ParseCommand(MessageReceivedEvent event) {
+		event.getTextChannel().sendMessage("http://z0r.de/" + Utils.GetRandom(GetLastZ0rde()));
 	}
 	
 	public int GetLastZ0rde()

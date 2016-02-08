@@ -16,7 +16,6 @@ package rinbot;
  */
 
 import net.dv8tion.jda.*;
-import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
@@ -25,26 +24,65 @@ import javax.security.auth.login.LoginException;
 
 import commands.Cena;
 import commands.Playlist;
+import commands.SystemCmd;
 import commands.Test;
 import commands.Z0rde;
 
 import java.io.File;
-import java.util.List;
-import java.util.Random;
+import java.util.ArrayList;
 
 public class MessageListener extends ListenerAdapter
 {
-	public static JDA jda;
-	public static MusicPlayer musicPlayer;
-	public static PlaylistManager playlistManager;
-	public static UserStatistic statistic;
+	private static JDA jda;
+	private static MusicPlayer musicPlayer;
+	private static PlaylistManager playlistManager;
+	private static UserStatistic statistic;
+	private static Test test;
+	private static Cena cena;
+	private static Z0rde z0rde;
+	private static Playlist playlist;
+	private static SystemCmd system;
 	
+	@SuppressWarnings("serial")
 	public static void main(String[] args)
     {
 		try {
 			jda = new JDABuilder(args[0],args[1]).buildAsync();
 	        jda.addEventListener(new MessageListener());
 	        musicPlayer = MusicPlayer.getInstance();
+	        
+	        test = (Test) new Test()
+	        	.MakeHandler(".test", " ", ":")
+	        	.AddKeywords(
+	        		new ArrayList<String>() {{
+	        			add("one"); add("two:"); add("thr:");
+	        		}}
+	        	);
+	        
+	        cena = (Cena) new Cena()
+	        		.MakeHandler(".cena", " ", ":")
+	    			.AddKeywords(new ArrayList<String>(){{
+	    				add("nm"); add("na"); add("ch:");
+	    			}});
+	        
+	        z0rde = (Z0rde) new Z0rde()
+	        		.MakeHandler(".z0rde", " ", "");
+	        
+	        playlist = (Playlist) new Playlist()
+	        		.MakeHandler(".pl", " ", ":")
+					.AddKeywords(new ArrayList<String>() {{
+						add("get"); add("all"); add("curr");
+						add("play"); add("add"); add("del"); add("dwl");
+						add("ch:"); add("nm:"); add("sg:"); add("url:");
+					}});
+
+	        system = (SystemCmd) new SystemCmd()
+	        		.MakeHandler(".sys", " ", ":")
+					.AddKeywords(new ArrayList<String>() {{
+						add("clear"); add("help");
+					}});
+	        
+	        // ВЫПИЛИТЬ
 	        musicPlayer.MusicPlayerInit(jda);
 	        playlistManager = PlaylistManager.getInstance();
 	        statistic = new UserStatistic(jda);
@@ -70,12 +108,12 @@ public class MessageListener extends ListenerAdapter
         			);
     	if (event.getAuthor().getUsername().equalsIgnoreCase("RinBot")) return;
     	
-    	new Cena(event);
-    	new Playlist(event);
-    	new Test(event);
-    	new Z0rde(event);
+    	playlist.Parse(event);
+    	test.Parse(event);
+    	cena.Parse(event);
+    	z0rde.Parse(event);
+    	system.Parse(event);
     	
-    	Random rnd = new Random();
     	String message = event.getMessage().getContent();
     	String[] messageArr = message.split("\\s+");
     	
@@ -117,7 +155,7 @@ public class MessageListener extends ListenerAdapter
         	event.getMessage().deleteMessage();
         } if (messageArr[0].equalsIgnoreCase(".volume"))
         {
-        	if(messageArr.length == 2 && tryParseFloat(messageArr[1]))
+        	if(messageArr.length == 2 && Utils.tryParseFloat(messageArr[1]))
         	{
         		event.getTextChannel().sendMessage("Громкость - " + Float.parseFloat(messageArr[1]));
         		musicPlayer.GetPlayer().setVolume(Float.parseFloat(messageArr[1]));
@@ -130,48 +168,17 @@ public class MessageListener extends ListenerAdapter
         	playlistManager.SetChannel(event.getTextChannel());
 	        playlistManager.GetMusicList();
         	event.getMessage().deleteMessage();
-        } else if (message.equalsIgnoreCase(".help"))
-        {
-        	MessageBuilder messageBuilder = new MessageBuilder();
-        	messageBuilder.appendString("Список команд:\r\n");
-        	messageBuilder.appendString("\t.help - запрос помощи\r\n");
-        	messageBuilder.appendString("\t.cat - постит рандомного кота в конфу\r\n");
-        	messageBuilder.appendString("\t.rnd %целое_число% - получить рандомное целое число от 0 до %целое_число%\r\n");
-        	messageBuilder.appendString("Войс:\r\n");
-        	messageBuilder.appendString("\t.con %channel% - присоединиться к каналу\r\n");
-        	messageBuilder.appendString("\t.dcon - выходит из войс чата\r\n");
-        	messageBuilder.appendString("\t.ml - список загруженной музыки\r\n");
-        	messageBuilder.appendString("\t.pl;current - плейлист\r\n");
-        	messageBuilder.appendString("\t.play;%URL%;%название% - скачивает песню и добавляет её в плейлист\r\n");
-        	messageBuilder.appendString("\t.play;!y%youtube-id%;%название% - скачивает песню c youtube и добавляет её в плейлист\r\n");
-        	messageBuilder.appendString("\t.play;%название% - добавляет скаченную песню в плейлист\r\n");
-        	messageBuilder.appendString("\t.stop - останавливает музыку\r\n");
-        	messageBuilder.appendString("\t.skip - пропускает песню\r\n");
-        	
-        	event.getAuthor().getPrivateChannel().sendMessage(messageBuilder.build());
-        	event.getMessage().deleteMessage();
         } else if(event.getMessage().getContent().equalsIgnoreCase(".cat"))
         {
-        	event.getTextChannel().sendFile(new File(System.getProperty("user.dir") + "\\media\\images\\cat" + rnd.nextInt(7) + ".jpg"));
+        	event.getTextChannel().sendFile(new File(System.getProperty("user.dir") + "\\media\\images\\cat" + Utils.GetRandom(7) + ".jpg"));
         	event.getMessage().deleteMessage();
         }
         else if (messageArr[0].equalsIgnoreCase(".rnd"))
         {
-        	if(messageArr.length == 2 && tryParseInt(messageArr[1]))
-        		event.getTextChannel().sendMessage("Случайное число - " + rnd.nextInt(Integer.parseInt(messageArr[1])));
+        	if(messageArr.length == 2 && Utils.tryParseInt(messageArr[1]))
+        		event.getTextChannel().sendMessage("Случайное число - " + Utils.GetRandom(Integer.parseInt(messageArr[1])));
         	else
         		event.getTextChannel().sendMessage("Неправильные аргументы команды.\r\n.random %целое_число%");
-        	event.getMessage().deleteMessage();
-        } else if (event.getMessage().getContent().equalsIgnoreCase(".clear"))
-        {
-        	if (!event.isPrivate())
-	            if (!event.getTextChannel().checkPermission(event.getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE))
-	                event.getTextChannel().sendMessage("Don't have permissions :,(");
-	            else
-	            {
-	            	Runnable thread = new ClearThread(event);
-	            	new Thread(thread).start();
-	            }
         	event.getMessage().deleteMessage();
         } else if (messageArr[0].equalsIgnoreCase(".stat") && messageArr[1].contains("@"))
         {
@@ -186,42 +193,5 @@ public class MessageListener extends ListenerAdapter
         }
     }
     
-    public class ClearThread implements Runnable
-    {
-    	MessageReceivedEvent event;
-    	
-    	public ClearThread(MessageReceivedEvent event) {
-			this.event = event;
-		}
-    	
-		@Override
-		public void run() {
-			event.getTextChannel().sendMessage("Начинаю чистку...");
-			MessageHistory history = new MessageHistory(event.getJDA(), event.getTextChannel());
-			List<Message> messages = history.retrieveAll();
-			for(Message _message: messages)
-				if (_message.getAuthor().getUsername().equalsIgnoreCase("RinBot") ||
-					_message.getAuthor().getUsername().equalsIgnoreCase("Butter Bot"))
-					_message.deleteMessage();
-			event.getAuthor().getPrivateChannel().sendMessage("Чистка окончена!");
-		}
-    }
-    
-    boolean tryParseInt(String value) {  
-        try {  
-            Integer.parseInt(value);  
-            return true;
-         } catch (NumberFormatException e) {  
-            return false;  
-         }  
-   }
 
-   boolean tryParseFloat(String value) {  
-        try {  
-            Float.parseFloat(value);  
-            return true;
-         } catch (NumberFormatException e) {  
-            return false;  
-         }  
-   }
 }

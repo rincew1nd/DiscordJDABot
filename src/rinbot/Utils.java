@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
@@ -26,6 +27,7 @@ public class Utils {
 
 	static StringBuilder sBuilder = new StringBuilder();
 	static Random rnd = new Random();
+	static User bot;
 	
     public static String GetRootFolder() {
     	String decodedPath = new File(".").getAbsolutePath();
@@ -164,5 +166,16 @@ public class Utils {
 	public static VoiceChannel GetUserVoiceChannel(MessageReceivedEvent event)
 	{
 		return event.getGuild().getVoiceStatusOfUser(event.getAuthor()).getChannel();
+	}
+	
+	public static User GetUrself(MessageReceivedEvent event)
+	{
+		if (bot != null)
+			return bot;
+		else
+		{
+			bot = event.getJDA().getUserById(event.getJDA().getSelfInfo().getId());
+			return bot;
+		}
 	}
 }

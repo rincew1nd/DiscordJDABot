@@ -3,6 +3,9 @@ package commands;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.events.message.MessageReceivedEvent;
+
 public class CommandHandler {
 	private String _cmd;
 	private String _arg;
@@ -35,12 +38,14 @@ public class CommandHandler {
 		return this;
 	}
 
-	public CommandHandler ParseString(String input)
+	public CommandHandler ParseString(MessageReceivedEvent event)
 	{
-		_isCommand = input.startsWith(_cmd);
-		_textInput = input.replace(_cmd, "");
-		_argumentHandler = new ArgumentHandler();
+		_textInput = event.getMessage().getContent();
 		
+		_isCommand = _textInput.startsWith(_cmd);
+		_textInput = _textInput.replace(_cmd, "");
+		_argumentHandler = new ArgumentHandler(event);
+
 		return this;
 	}
 	
@@ -56,8 +61,9 @@ public class CommandHandler {
 	
 	public class ArgumentHandler {
 		ArrayList<String> args;
+		ArrayList<User> mentions;
 		
-		public ArgumentHandler() 
+		public ArgumentHandler(MessageReceivedEvent event) 
 		{
 			args = new ArrayList<String>();
 			if (_keywords != null)
@@ -88,6 +94,8 @@ public class CommandHandler {
 				}
 				args.add(argument);
 			}
+
+			mentions = (ArrayList<User>) event.getMessage().getMentionedUsers();
 		}
 
 		public boolean Empty() 
@@ -124,6 +132,11 @@ public class CommandHandler {
 				result.add(element.replace(mainArg, ""));
 			
 			return result;
+		}
+		
+		public ArrayList<User> GetMentions()
+		{
+			return mentions;
 		}
 	}
 }

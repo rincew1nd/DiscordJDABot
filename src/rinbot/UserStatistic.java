@@ -26,7 +26,7 @@ public class UserStatistic {
 	private Map<String, Integer> HelpSearcher;
 	private String separ = "\";\"";
 
-	UserStatistic(JDA jda)
+	public UserStatistic(JDA jda)
 	{
 		sBuilder = new StringBuilder();
 		int sleep = 10;

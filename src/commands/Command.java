@@ -1,6 +1,8 @@
 package commands;
 
 import java.util.ArrayList;
+
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import rinbot.MusicPlayer;
 import rinbot.PlaylistManager;
@@ -25,11 +27,13 @@ public class Command {
 	
 	public Command Parse(MessageReceivedEvent event)
 	{
-		handler.ParseString(event.getMessage().getContent());
+		handler.ParseString(event);
 		
 		if (handler.isCommand())
 		{
 			event.getMessage().deleteMessage();
+			_musicPlayer.SetChannel(event.getTextChannel());
+			_playlistManager.SetChannel(event.getTextChannel());
 			ParseCommand(event);
 		}
 		return this;
@@ -55,5 +59,10 @@ public class Command {
 	public ArrayList<String> GetParams(String param)
 	{
 		return handler.GetArgHandler().GetArgsValues(param);
+	}
+	
+	public ArrayList<User> GetMentions()
+	{
+		return handler.GetArgHandler().GetMentions();
 	}
 }

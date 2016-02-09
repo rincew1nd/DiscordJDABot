@@ -250,11 +250,11 @@ public class MusicPlayer {
 	}
 	
 	// Полностью остановить воспроизведение и очистить плейлист
-	public void Stop(TextChannel channel)
+	public void Stop()
 	{
 		if (_jda.getAudioManager().isConnected())
 			if (_typicalPlayer == null || _typicalPlayer.isStopped())
-				channel.sendMessage(
+				_textChannel.sendMessage(
 					new MessageBuilder().appendString("Бот ничего не играет!").build()
 				);
 			else
@@ -264,7 +264,7 @@ public class MusicPlayer {
 				_typicalPlayer = null;
 			}
 		else
-        	channel.sendMessage(
+			_textChannel.sendMessage(
         		new MessageBuilder()
         			.appendString("Бот не присоединен ни к одному каналу!\n")
         			.appendString("Присоединитесь к каналу используя команду !connect %channel%")

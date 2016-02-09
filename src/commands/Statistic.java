@@ -1,6 +1,6 @@
 package commands;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.MessageBuilder;
@@ -20,7 +20,7 @@ public class Statistic extends Command{
 	public void ParseCommand(MessageReceivedEvent event) {
 		 
 		 boolean games = Has("games");
-		 ArrayList<User> mentions = GetMentions();
+		 List<User> mentions = GetMentions();
 		 
 		 if (games)
 			 if (mentions.size() != 0)

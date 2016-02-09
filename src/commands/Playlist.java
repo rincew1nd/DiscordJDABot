@@ -1,6 +1,7 @@
 package commands;
 
 import java.util.List;
+
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import rinbot.MusicPlayer;
@@ -15,12 +16,13 @@ public class Playlist extends Command
 		boolean isGetAll = Has("all");
 		boolean isCurrent = Has("curr");
 		boolean isPlay = Has("play");
+		boolean isNew = Has("new");
 		boolean isAdd = Has("add");
 		boolean isDelete = Has("del");
-//		boolean isDownload = Has("dwl");
+		boolean isDownload = Has("dwl");
 		String voicechannel = GetParam("ch:");
 		String playlistName = GetParam("nm:");
-//		String url = GetParam("url:");
+		String url = GetParam("url:");
 		List<String> songsName = GetParams("sg:");
 		
 		VoiceChannel voiceChannelToConnect = null;
@@ -54,12 +56,15 @@ public class Playlist extends Command
 			_playlistManager.PrintAllPlaylists();
 		else if (isGet && isCurrent && playlistName == "" && songsName.size() == 0)
 			_playlistManager.PrintPlaylist(_musicPlayer.GetPlaylist());
+		else if (isNew)
+			_playlistManager.NewPlaylist(playlistName);
 		else if (isAdd)
 			_playlistManager.AddToPlaylist(playlistName, songsName);
 		else if (isDelete)
 			_playlistManager.DeleteFromPlaylist(playlistName, songsName);
-//		else if (isDownload)
-//			_playlistManager.DownloadMusic(URL, playlistName);
+		else if (isDownload)
+			if (url != "")
+				_playlistManager.DownloadMusic(url, playlistName);
 	}
 	
 	public class PlayThread implements Runnable

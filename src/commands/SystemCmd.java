@@ -30,22 +30,28 @@ public class SystemCmd extends Command
 		else if (help)
 		{
 			MessageBuilder messageBuilder = new MessageBuilder();
-			messageBuilder.appendString("Список команд:\r\n");
-			messageBuilder.appendString("\t.help - запрос помощи\r\n");
-			messageBuilder.appendString("\t.cat - постит рандомного кота в конфу\r\n");
-			messageBuilder
-					.appendString("\t.rnd %целое_число% - получить рандомное целое число от 0 до %целое_число%\r\n");
-			messageBuilder.appendString("Войс:\r\n");
-			messageBuilder.appendString("\t.con %channel% - присоединиться к каналу\r\n");
-			messageBuilder.appendString("\t.dcon - выходит из войс чата\r\n");
-			messageBuilder.appendString("\t.ml - список загруженной музыки\r\n");
-			messageBuilder.appendString("\t.pl;current - плейлист\r\n");
-			messageBuilder.appendString("\t.play;%URL%;%название% - скачивает песню и добавляет её в плейлист\r\n");
-			messageBuilder.appendString(
-					"\t.play;!y%youtube-id%;%название% - скачивает песню c youtube и добавляет её в плейлист\r\n");
-			messageBuilder.appendString("\t.play;%название% - добавляет скаченную песню в плейлист\r\n");
-			messageBuilder.appendString("\t.stop - останавливает музыку\r\n");
-			messageBuilder.appendString("\t.skip - пропускает песню\r\n");
+			messageBuilder.appendString("Список команд:\r\n")
+			.appendString("\t.sys help - запрос помощи\r\n")
+			.appendString("Войс:\r\n")
+			.appendString("\t.msc con ch:%channel% - присоединиться к каналу\r\n")
+			.appendString("\t.msc dcon - выходит из войс чата\r\n")
+			.appendString("\t.msc skip - пропустить трек\r\n")
+			.appendString("\t.msc stop - остановить воспроизведение\r\n")
+			.appendString("\t.msc volume - установить громкость музыки (0.0-1.0)\r\n")
+			.appendString("\t.msc list - список загруженной музыки\r\n")
+			.appendString("\t.pl get nm:%name% - получить список треков плейлиста\r\n")
+			.appendString("\t.pl get all - получить список всех плейлистов\r\n")
+			.appendString("\t.pl get curr - получить текущий плейлист\r\n")
+			.appendString("\t.pl new nm:%name% - создать плейлист\r\n")
+			.appendString("\t.pl add nm:%name% sg:%name% - добавить трек в плейлист\r\n")
+			.appendString("\t.pl del nm:%name% sg:%name%- удалить трек из плейлиста\r\n")
+			.appendString("\t.pl dwl nm:%name% url:%name%- скачать трек по URL (только mp3)\r\n")
+			.appendString(".cena - CENA\r\n")
+			.appendString("\t.cena ch:%name% - CENA COMES TO CHANNEL %NAME%\r\n")
+			.appendString("\t.cena nm - CENA SPEACHLESS\r\n")
+			.appendString("\t.cena na - CANE VOICELESS :<\r\n")
+			.appendString(".stat game %MENTION% - получить стату по игорям юзера\r\n")
+			.appendString(".z0rde - рандомный з0рд\r\n");
 
 			event.getAuthor().getPrivateChannel().sendMessage(messageBuilder.build());
 		}

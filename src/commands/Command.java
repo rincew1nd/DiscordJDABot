@@ -1,6 +1,7 @@
 package commands;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
@@ -61,7 +62,7 @@ public class Command {
 		return handler.GetArgHandler().GetArgsValues(param);
 	}
 	
-	public ArrayList<User> GetMentions()
+	public List<User> GetMentions()
 	{
 		return handler.GetArgHandler().GetMentions();
 	}

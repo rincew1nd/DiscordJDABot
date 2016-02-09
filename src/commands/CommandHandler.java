@@ -1,6 +1,7 @@
 package commands;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import net.dv8tion.jda.entities.User;
@@ -61,7 +62,7 @@ public class CommandHandler {
 	
 	public class ArgumentHandler {
 		ArrayList<String> args;
-		ArrayList<User> mentions;
+		List<User> mentions;
 		
 		public ArgumentHandler(MessageReceivedEvent event) 
 		{
@@ -75,7 +76,6 @@ public class CommandHandler {
 					{
 						if (element.contains(_param))
 						{
-							System.out.println(element.substring(0, element.indexOf(_param)+1));
 							if (_keywords.contains(element.substring(0, element.indexOf(_param)+1)))
 							{
 								if (argument.length() != 0)
@@ -95,7 +95,7 @@ public class CommandHandler {
 				args.add(argument);
 			}
 
-			mentions = (ArrayList<User>) event.getMessage().getMentionedUsers();
+			mentions = event.getMessage().getMentionedUsers();
 		}
 
 		public boolean Empty() 
@@ -134,7 +134,7 @@ public class CommandHandler {
 			return result;
 		}
 		
-		public ArrayList<User> GetMentions()
+		public List<User> GetMentions()
 		{
 			return mentions;
 		}

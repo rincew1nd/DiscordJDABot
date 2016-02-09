@@ -19,7 +19,6 @@ import net.dv8tion.jda.entities.TextChannel;
 
 public class PlaylistManager {
 
-	private StringBuilder _sBuilder;
 	private TextChannel _textChannel;
 	
 	public static class PlaylistManagerHolder {
@@ -43,17 +42,16 @@ public class PlaylistManager {
 	// Получить весь список треков из папки \media\music
 	public void GetMusicList()
 	{
-		_sBuilder.setLength(0);
-		_sBuilder.append("Список доступной музыки:\r\n");
+		MessageBuilder message = new MessageBuilder();
+		message.appendString("Список доступной музыки:\r\n");
 		
 		File folder = new File(System.getProperty("user.dir") + "\\media\\music");
 		File[] listOfFiles = folder.listFiles();
 		for (int i = 0; i < listOfFiles.length; i++)
-		if (listOfFiles[i].isFile())
-			
-		_sBuilder.append(listOfFiles[i].getName() + "\r\n");
+			if (listOfFiles[i].isFile())
+				message.appendString(listOfFiles[i].getName() + "\r\n");
 		
-		_textChannel.sendMessage(_sBuilder.toString());
+		_textChannel.sendMessage(message.build());
 	}
 
 	// Скачать трек в папку \media\music
@@ -65,7 +63,7 @@ public class PlaylistManager {
 		{
 			fileName = URL.substring(URL.lastIndexOf('/')+1, URL.lastIndexOf('.')-1);
 			int i = 0;
-			while (new File(System.getProperty("user.dir") + "\\media\\music\\" + fileName + ".mp3").exists())
+			while (new File(Utils.GetRootFolder() + "\\media\\music\\" + fileName + ".mp3").exists())
 			{
 				if (fileName.contains("("))
 				fileName = fileName.substring(0, fileName.lastIndexOf('(')-1) + "(" + i + ")";
@@ -75,27 +73,33 @@ public class PlaylistManager {
 			}
 		}
 
-		if (!new File(System.getProperty("user.dir") + "\\media\\music\\" + fileName + ".mp3").exists())
+		if (!new File(Utils.GetRootFolder() + "\\media\\music\\" + fileName + ".mp3").exists())
 		{
-			path = System.getProperty("user.dir") + "\\media\\music\\" + fileName + ".mp3";
+			path = Utils.GetRootFolder() + "\\media\\music\\" + fileName + ".mp3";
 			try {
-			URLConnection conn = new URL(URL).openConnection();
-			InputStream is = conn.getInputStream();
-			
-			OutputStream outstream = new FileOutputStream(new File("\\media\\music\\" + fileName + ".mp3"));
-			byte[] buffer = new byte[4096];
-			int len;
-			while ((len = is.read(buffer)) > 0) {
-				outstream.write(buffer, 0, len);
+				URLConnection conn = new URL(URL).openConnection();
+				InputStream is = conn.getInputStream();
+				
+				OutputStream outstream = new FileOutputStream(new File(path));
+				byte[] buffer = new byte[4096];
+				int len;
+				while ((len = is.read(buffer)) > 0)
+					outstream.write(buffer, 0, len);
+				outstream.close();
+			} catch (MalformedURLException e) {
+				_textChannel.sendMessage("Неправильный URL");
+				e.printStackTrace();
+			} catch (IOException e) {
+				_textChannel.sendMessage("Неудалось найти файл - " + fileName);
+				e.printStackTrace();
 			}
-			outstream.close();
-		} catch (MalformedURLException e) {
-			_textChannel.sendMessage("Неправильный URL");
-			e.printStackTrace();
-		} catch (IOException e) {
-			_textChannel.sendMessage("Неудалось найти файл - " + fileName);
-			e.printStackTrace();
-		}
+			
+			_textChannel.sendMessage(
+				new MessageBuilder()
+				.appendString("Файл скачан с именем ")
+				.appendString(fileName)
+				.build()
+			);
 			return path;
 		} else
 			return null;

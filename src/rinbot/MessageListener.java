@@ -1,8 +1,6 @@
 package rinbot;
 
-import net.dv8tion.jda.*;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.hooks.ListenerAdapter;
+import java.util.ArrayList;
 
 import javax.security.auth.login.LoginException;
 
@@ -13,8 +11,11 @@ import commands.Statistic;
 import commands.SystemCmd;
 import commands.Test;
 import commands.Z0rde;
-
-import java.util.ArrayList;
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.JDABuilder;
+import net.dv8tion.jda.MessageBuilder;
+import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.hooks.ListenerAdapter;
 
 public class MessageListener extends ListenerAdapter
 {
@@ -33,55 +34,57 @@ public class MessageListener extends ListenerAdapter
 		try {
 			jda = new JDABuilder(args[0],args[1]).buildAsync();
 	        jda.addEventListener(new MessageListener());
-	        
-	        test = (Test) new Test()
-	        	.MakeHandler(".test", " ", ":")
-	        	.AddKeywords(
-	        		new ArrayList<String>() {{
-	        			add("one"); add("two:"); add("thr:");
-	        		}}
-	        	);
-	        
-	        cena = (Cena) new Cena()
-	        		.MakeHandler(".cena", " ", ":")
-	    			.AddKeywords(new ArrayList<String>(){{
-	    				add("nm"); add("na"); add("ch:");
-	    			}});
-	        
-	        z0rde = (Z0rde) new Z0rde()
-	        		.MakeHandler(".z0rde", " ", "");
-	        
-	        playlist = (Playlist) new Playlist()
-	        		.MakeHandler(".pl", " ", ":")
-					.AddKeywords(new ArrayList<String>() {{
-						add("get"); add("all"); add("curr");
-						add("play"); add("add"); add("del"); add("dwl");
-						add("ch:"); add("nm:"); add("sg:"); add("url:");
-					}});
-
-	        system = (SystemCmd) new SystemCmd()
-	        		.MakeHandler(".sys", " ", ":")
-					.AddKeywords(new ArrayList<String>() {{
-						add("clear"); add("help");
-					}});
-	        
-	        music = (Music) new SystemCmd()
-	        		.MakeHandler(".muc", " ", ":")
-					.AddKeywords(new ArrayList<String>() {{
-						add("con"); add("dcon"); add("ch:");
-						add("skip"); add("stop"); add("volume"); add("ml");
-					}});
-	        
-	        statistic = (Statistic) new Statistic(jda)
-	        		.MakeHandler(".stat", " ", ":")
-	        		.AddKeywords(new ArrayList<String>() {{
-						add("games");
-					}});
 		} catch (LoginException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		}
+		
+	    MusicPlayer.getInstance().MusicPlayerInit(jda);
+	        
+	    test = (Test) new Test()
+	    	.MakeHandler(".test", " ", ":")
+	    	.AddKeywords(
+	    		new ArrayList<String>() {{
+	    			add("one"); add("two:"); add("thr:");
+	    		}}
+	    	);
+	    
+	    cena = (Cena) new Cena()
+	    		.MakeHandler(".cena", " ", ":")
+	   		.AddKeywords(new ArrayList<String>(){{
+	   			add("nm"); add("na"); add("ch:");
+	   		}});
+	    
+	    z0rde = (Z0rde) new Z0rde()
+	    		.MakeHandler(".z0rde", " ", "");
+	    
+	    playlist = (Playlist) new Playlist()
+	    		.MakeHandler(".pl", " ", ":")
+			.AddKeywords(new ArrayList<String>() {{
+				add("get"); add("all"); add("curr");
+				add("play"); add("new"); add("add"); add("del"); add("dwl");
+				add("ch:"); add("nm:"); add("sg:"); add("url:");
+			}});
+
+	    system = (SystemCmd) new SystemCmd()
+	    		.MakeHandler(".sys", " ", ":")
+			.AddKeywords(new ArrayList<String>() {{
+				add("clear"); add("help");
+			}});
+	    
+	    music = (Music) new Music()
+	    	.MakeHandler(".msc", " ", ":")
+			.AddKeywords(new ArrayList<String>() {{
+				add("con"); add("dcon"); add("ch:");
+				add("skip"); add("stop"); add("volume"); add("list");
+			}});
+	    
+	    statistic = (Statistic) new Statistic(jda)
+	    		.MakeHandler(".stat", " ", ":")
+	    		.AddKeywords(new ArrayList<String>() {{
+				add("games");
+			}});
     }
 	
     @Override

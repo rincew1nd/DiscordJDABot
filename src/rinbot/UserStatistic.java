@@ -1,8 +1,5 @@
 package rinbot;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
@@ -12,7 +9,11 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import javax.swing.Timer;
 
 import net.dv8tion.jda.JDA;

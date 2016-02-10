@@ -70,14 +70,15 @@ public class MessageListener extends ListenerAdapter
 	    system = (SystemCmd) new SystemCmd()
 	    		.MakeHandler(".sys", " ", ":")
 			.AddKeywords(new ArrayList<String>() {{
-				add("clear"); add("help");
+				add("clear"); add("help"); add("logs");
 			}});
 	    
 	    music = (Music) new Music()
 	    	.MakeHandler(".msc", " ", ":")
 			.AddKeywords(new ArrayList<String>() {{
 				add("con"); add("dcon"); add("ch:");
-				add("skip"); add("stop"); add("volume"); add("list");
+				add("skip"); add("stop"); add("shuffle");
+				add("volume"); add("list");
 			}});
 	    
 	    statistic = (Statistic) new Statistic(jda)

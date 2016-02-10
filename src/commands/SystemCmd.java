@@ -1,5 +1,6 @@
 package commands;
 
+import java.io.File;
 import java.util.List;
 
 import net.dv8tion.jda.MessageBuilder;
@@ -7,6 +8,7 @@ import net.dv8tion.jda.MessageHistory;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import rinbot.Utils;
 
 public class SystemCmd extends Command
 {
@@ -18,6 +20,7 @@ public class SystemCmd extends Command
 		
 		boolean clear = Has("clear");
 		boolean help = Has("help");
+		boolean logs = Has("logs");
 		
 		if (clear && !event.isPrivate())
             if (!event.getTextChannel().checkPermission(event.getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE))
@@ -27,6 +30,10 @@ public class SystemCmd extends Command
             	Runnable thread = new ClearThread(event);
             	new Thread(thread).start();
             }
+		else if (logs)
+		{
+			event.getAuthor().getPrivateChannel().sendFile(new File(Utils.GetRootFolder() + "\\logs.txt"));
+		}
 		else if (help)
 		{
 			MessageBuilder messageBuilder = new MessageBuilder();
@@ -37,6 +44,7 @@ public class SystemCmd extends Command
 			.appendString("\t.msc dcon - выходит из войс чата\r\n")
 			.appendString("\t.msc skip - пропустить трек\r\n")
 			.appendString("\t.msc stop - остановить воспроизведение\r\n")
+			.appendString("\t.msc shuffle - перемешеть плейлист\r\n")
 			.appendString("\t.msc volume - установить громкость музыки (0.0-1.0)\r\n")
 			.appendString("\t.msc list - список загруженной музыки\r\n")
 			.appendString("\t.pl get nm:%name% - получить список треков плейлиста\r\n")
@@ -50,7 +58,7 @@ public class SystemCmd extends Command
 			.appendString("\t.cena ch:%name% - CENA COMES TO CHANNEL %NAME%\r\n")
 			.appendString("\t.cena nm - CENA SPEACHLESS\r\n")
 			.appendString("\t.cena na - CANE VOICELESS :<\r\n")
-			.appendString(".stat game %MENTION% - получить стату по игорям юзера\r\n")
+			.appendString(".stat games %MENTION% - получить стату по игорям юзера\r\n")
 			.appendString(".z0rde - рандомный з0рд\r\n");
 
 			event.getAuthor().getPrivateChannel().sendMessage(messageBuilder.build());

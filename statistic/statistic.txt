@@ -1,16 +1,17 @@
-95477450720411648";"Heroes of the Storm";"7320";"Nova Ragnarok Online";"238940
-95533841099272192";"Unity";"160030";"League of Legends";"87590";"Nova Ragnarok Online";"240
+95477450720411648";"Heroes of the Storm";"7320";"byond";"10";"Space Station 13";"20";"Nova Ragnarok Online";"259670
+95533841099272192";"Unity";"177630";"League of Legends";"148470";"Nova Ragnarok Online";"240
 95491420827168768";"League of Legends";"740";"Warframe";"3360";"Skyforge";"2370
 95482280289509376";"Nova Ragnarok Online";"6080";"Borderlands 2";"16130
 95481840332185600";"Unity";"8420";"Nova Ragnarok Online";"54510";"Borderlands 2";"13940
-95529043549491200";"Hearthstone";"14510";"League of Legends";"55040
-95570832494956544";"Nova Ragnarok Online";"249160
-95506762374844416";"League of Legends";"4290";"FINAL FANTASY XIV";"21260";"Guild Wars 2";"3420
+95529043549491200";"Hearthstone";"14510";"League of Legends";"88980
+95570832494956544";"Nova Ragnarok Online";"290030
+95506762374844416";"League of Legends";"4290";"FINAL FANTASY XIV";"26030";"FINAL FANTASY XIV - A Realm Reborn";"30";"Guild Wars 2";"3420
 97042301351649280";"Borderlands";"8350";"Counter-Strike: Global Offensive";"10240";"Super Meat Boy";"1710
-96596622921728000";"DOTA 2";"3890";"Counter-Strike: Global Offensive";"2940";"Rainbow Six Siege";"1690
-95614197911531520";"League of Legends";"45060";"Hearthstone";"2750";"Nova Ragnarok Online";"202500
-142681152203915264";"Nova Ragnarok Online";"58060
+96596622921728000";"DOTA 2";"3890";"XCOM 2";"2800";"Counter-Strike: Global Offensive";"12770";"Rainbow Six Siege";"1690
+95614197911531520";"League of Legends";"45060";"Hearthstone";"2750";"Nova Ragnarok Online";"215170
+142681152203915264";"Nova Ragnarok Online";"61230
 95611380731740160";"DOTA 2";"4770";"Nova Ragnarok Online";"17790
 95782961705652224";"Nova Ragnarok Online";"169690
 103436103519838208";"Warframe";"280
-95489352238374912";"Undertale";"3950";"League of Legends";"3330";"Nova Ragnarok Online";"1650
+95489352238374912";"Undertale";"3950";"League of Legends";"3330";"Eclipse";"16790";"Nova Ragnarok Online";"1650
+95516279590363136";"Google Chrome";"110

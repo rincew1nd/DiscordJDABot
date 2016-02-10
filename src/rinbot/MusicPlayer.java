@@ -106,7 +106,8 @@ public class MusicPlayer {
 	//       GETTER SETTER       //
 	///////////////////////////////
 	
-	
+
+	public LinkedList<File> GetMusicQuery() { return _musicQuery; };
 	public Player GetPlayer() { return _typicalPlayer; };
 	public Player GetPlayerOneShot() { return _oneShotPlayer; };
 	public String GetPlaylist() { return _typicalPlaylist; };
@@ -187,7 +188,7 @@ public class MusicPlayer {
 				);
 	            e.printStackTrace();
 	    	}
-    	} else
+    	} else {
 			Disconnect();
 			_textChannel.sendMessage(
 				new MessageBuilder()
@@ -196,6 +197,7 @@ public class MusicPlayer {
 					.appendString(" не найден")
 					.build()
 			);
+    	}
     }
 
 	public void Play(String playlist, VoiceChannel voiceChannel)
@@ -289,7 +291,7 @@ public class MusicPlayer {
 	}
 
 	// Перемешать текущий плейлист
-	public void Shuffle(TextChannel channel)
+	public void Shuffle()
 	{
 		_musicQuery.removeFirst();
 		Collections.shuffle(_musicQuery);

@@ -43,8 +43,16 @@ public class CommandHandler {
 	{
 		_textInput = event.getMessage().getContent();
 		
-		_isCommand = _textInput.startsWith(_cmd);
-		_textInput = _textInput.replace(_cmd, "");
+		if (_textInput == _cmd)
+		{
+			_isCommand = _textInput.startsWith(_cmd);
+			_textInput = _textInput.replace(_cmd, "");
+		}
+		else
+		{
+			_isCommand = _textInput.startsWith(_cmd + " ");
+			_textInput = _textInput.replace(_cmd + " ", "");
+		}
 		_argumentHandler = new ArgumentHandler(event);
 
 		return this;

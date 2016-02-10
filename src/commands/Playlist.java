@@ -55,7 +55,7 @@ public class Playlist extends Command
 		else if (isGet && isGetAll && playlistName == "" && songsName.size() == 0)
 			_playlistManager.PrintAllPlaylists();
 		else if (isGet && isCurrent && playlistName == "" && songsName.size() == 0)
-			_playlistManager.PrintPlaylist(_musicPlayer.GetPlaylist());
+			_playlistManager.PrintCurrentPlaylist();
 		else if (isNew)
 			_playlistManager.NewPlaylist(playlistName);
 		else if (isAdd)

@@ -232,6 +232,16 @@ public class PlaylistManager {
 			_textChannel.sendMessage(builder.build());
 		}
 	}
+	
+	// Показать все треки в плейлисте
+	public void PrintCurrentPlaylist()
+	{
+		MessageBuilder builder = new MessageBuilder();
+		builder.appendString("Плейлист ").appendString(MusicPlayer.getInstance().GetPlaylist()).appendString(":\n");
+		for (File music : MusicPlayer.getInstance().GetMusicQuery())
+			builder.appendString(music.getName()).appendString(" \n");
+		_textChannel.sendMessage(builder.build());
+	}
 
 	// Показать все плейлисты из \media\music\playList.json
 	public void PrintAllPlaylists()

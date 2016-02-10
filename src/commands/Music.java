@@ -18,6 +18,7 @@ public class Music extends Command
 		boolean list = Has("list");
 		boolean skip = Has("skip");
 		boolean stop = Has("stop");
+		boolean shuffle = Has("shuffle");
 		boolean volume = Has("volume");
 		String voiceChannel = GetParam("ch:");
 		String volumeValue = GetParam("val:");
@@ -70,6 +71,9 @@ public class Music extends Command
         } else if (stop)
         {
         	_musicPlayer.Stop();
+        } else if (shuffle)
+        {
+        	_musicPlayer.Shuffle();
         } if (volume)
         {
         	if(Utils.tryParseFloat(volumeValue))

@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import rinbot.Logs;
 import rinbot.MusicPlayer;
 import rinbot.PlaylistManager;
 
@@ -13,6 +14,7 @@ public class Command {
 	MusicPlayer _musicPlayer = MusicPlayer.getInstance();
 	PlaylistManager _playlistManager = PlaylistManager.getInstance();
 	CommandHandler handler = new CommandHandler();
+	
 	
 	public Command MakeHandler(String command, String separator, String parameter)
 	{
@@ -32,6 +34,11 @@ public class Command {
 		
 		if (handler.isCommand())
 		{
+			Logs.getInstance().appendLog(
+				"[" + event.getMessage().getTime() + "]" +
+				event.getMessage().getAuthor().getUsername() + ": " +
+				event.getMessage().getContent()
+			);
 			event.getMessage().deleteMessage();
 			_musicPlayer.SetChannel(event.getTextChannel());
 			_playlistManager.SetChannel(event.getTextChannel());

@@ -30,6 +30,9 @@ public class MusicPlayer {
 	private VoiceChannel _typicalChannel = null;
 	private String _typicalPlaylist;
 	
+	///
+	private String status; 
+	
 	//OneShot Player variables
 	private Player _oneShotPlayer;
 	private boolean _oneShot = false;
@@ -54,7 +57,7 @@ public class MusicPlayer {
 			public void actionPerformed(ActionEvent arg0) {
 				if (_typicalPlayer != null)
 				{
-					if (_oneShotPlayer != null)
+					if (_oneShotPlayer != null && _oneShotPlayer.isStopped() && !_typicalPlayer.isPlaying())
 					{
 						_oneShot = false;
 						if (_typicalPlayer.isPaused())
@@ -74,7 +77,12 @@ public class MusicPlayer {
 						} else if (_typicalPlayer.isPlaying())
 						{
 							String audioName = _musicQuery.getFirst().getName();
-							jda.getAccountManager().setGame(audioName.substring(0, audioName.indexOf('.')));
+							
+							if (!status.equals(audioName))
+							{
+								jda.getAccountManager().setGame(audioName.substring(0, audioName.indexOf('.')));
+								status = audioName;
+							}
 						}
 					}
 				} else if (_oneShotPlayer != null)
@@ -86,7 +94,11 @@ public class MusicPlayer {
 							jda.getAudioManager().closeAudioConnection();
 					}
 				} else {
-					jda.getAccountManager().setGame("with Butter Bot");
+					if (status != "with Butter Bot")
+					{
+						jda.getAccountManager().setGame("with Butter Bot");
+						status = "with Butter Bot";
+					}
 				}
 			}     
 		};
@@ -184,7 +196,11 @@ public class MusicPlayer {
 	            e.printStackTrace();
 	        } catch (IllegalArgumentException e) {
 	        	_textChannel.sendMessage(
-					new MessageBuilder().appendString("Не удалось обработать файл. Это не аудио файл или не поддерживаемый формат").build()
+					new MessageBuilder()
+						.appendString("Не удалось обработать файл ")
+						.appendString(audioFile.getName())
+						.appendString(". Это не аудио файл или не поддерживаемый формат")
+						.build()
 				);
 	            e.printStackTrace();
 	    	}

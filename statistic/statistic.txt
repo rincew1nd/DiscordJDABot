@@ -1,17 +1,17 @@
-95477450720411648";"Heroes of the Storm";"7320";"byond";"10";"Space Station 13";"20";"Nova Ragnarok Online";"259670
-95533841099272192";"Unity";"177630";"League of Legends";"148470";"Nova Ragnarok Online";"240
+95477450720411648";"Heroes of the Storm";"7320";"byond";"10";"Space Station 13";"20";"Nova Ragnarok Online";"334050
+95533841099272192";"Unity";"239210";"Rocket League";"3250";"League of Legends";"217080";"rikiworo@gmail.com";"20";"Secrets of Grindea";"3860";"Nova Ragnarok Online";"240
 95491420827168768";"League of Legends";"740";"Warframe";"3360";"Skyforge";"2370
-95482280289509376";"Nova Ragnarok Online";"6080";"Borderlands 2";"16130
-95481840332185600";"Unity";"8420";"Nova Ragnarok Online";"54510";"Borderlands 2";"13940
-95529043549491200";"Hearthstone";"14510";"League of Legends";"88980
-95570832494956544";"Nova Ragnarok Online";"290030
-95506762374844416";"League of Legends";"4290";"FINAL FANTASY XIV";"26030";"FINAL FANTASY XIV - A Realm Reborn";"30";"Guild Wars 2";"3420
-97042301351649280";"Borderlands";"8350";"Counter-Strike: Global Offensive";"10240";"Super Meat Boy";"1710
-96596622921728000";"DOTA 2";"3890";"XCOM 2";"2800";"Counter-Strike: Global Offensive";"12770";"Rainbow Six Siege";"1690
-95614197911531520";"League of Legends";"45060";"Hearthstone";"2750";"Nova Ragnarok Online";"215170
+95482280289509376";"Borderlands_2_RU";"10";"Nova Ragnarok Online";"6080";"Borderlands 2";"29450
+95481840332185600";"Unity";"8420";"Borderlands_2_RU";"40";"Nova Ragnarok Online";"57890";"Borderlands 2";"28260
+95529043549491200";"Hearthstone";"14510";"League of Legends";"109850";"Counter-Strike: Global Offensive";"1900
+95570832494956544";"Nova Ragnarok Online";"392210
+95506762374844416";"League of Legends";"4290";"FINAL FANTASY XIV";"30360";"FINAL FANTASY XIV - A Realm Reborn";"90";"Guild Wars 2";"3420
+97042301351649280";"Duck Game";"3400";"Borderlands";"8350";"Skullgirls";"2570";"Counter-Strike: Global Offensive";"10240";"Transistor";"40";"Super Meat Boy";"1710
+96596622921728000";"DOTA 2";"3890";"XCOM 2";"4730";"Counter-Strike: Global Offensive";"12770";"Warframe";"18280";"Rainbow Six Siege";"1690
+95614197911531520";"League of Legends";"59990";"Hearthstone";"10880";"Nova Ragnarok Online";"244740
 142681152203915264";"Nova Ragnarok Online";"61230
 95611380731740160";"DOTA 2";"4770";"Nova Ragnarok Online";"17790
-95782961705652224";"Nova Ragnarok Online";"169690
+95782961705652224";"Nova Ragnarok Online";"182030
 103436103519838208";"Warframe";"280
-95489352238374912";"Undertale";"3950";"League of Legends";"3330";"Eclipse";"16790";"Nova Ragnarok Online";"1650
-95516279590363136";"Google Chrome";"110
+95489352238374912";"Undertale";"3950";"League of Legends";"3330";"Eclipse";"172700";"Nova Ragnarok Online";"1650
+95516279590363136";"Lethal League";"220";"Google Chrome";"110";"Rogue Legacy";"660
